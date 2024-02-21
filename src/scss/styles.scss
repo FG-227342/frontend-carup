@@ -1,0 +1,25 @@
+// framework css ( Bootstrap )
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+// framework custom css ( Bootstrap )
+@import "bootstrap_custom";
+
+// global css ( template fonts, theme color, helper classes etc.)
+@import "global/fonts";
+@import "global/themes";
+@import "global/mixins";
+@import "global/general";
+@import "global/helpers";
+@import "global/animation";
+
+
+// layout css ( for example: top header, sidebar menu, mini sidebar etc. )
+@import "layout";
+@import "brand";
+@import "sidebar";
+@import "header";
+@import "page-header";
+
+// widgets css ( for example: card, list, table, etc. )
+@import "widgets/card";
+@import "widgets/list";

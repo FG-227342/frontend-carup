@@ -1,0 +1,266 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Mis Móviles</h4>
+            <div class="col-10 offset-1">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="crearNuevo()"
+                        style="float:right; margin:10px">
+                        <i class="bi bi-plus-circle"></i> Crear un Móvil
+                    </button>
+                </div>
+                <table class="table table-striped table-bordered text-center" id="tabMoviles" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#Id</th>
+                            <th>Nombre</th>
+                            <th>Matrícula</th>
+                            <th>es camión</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCrearCliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="hideDIV">
+                                    <label class="form-label">ID:</label>
+                                    <label class="form-label" id="modalIdMovil"></label>
+                                </span>
+                            </div>
+                            <div class="form-check form-switch col-6">
+                                <input class="form-check-input" type="checkbox" id="checkEsCamion"
+                                    style="transform: scale(1.2);">
+                                <label class="form-check-label" for="checkEsCamion">Es camión?</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="modalNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="modalNombre"
+                                    placeholder="Ingrese el nombre..." style="text-transform:uppercase">
+                            </div>
+                            <div class="col-12">
+                                <label for="modalMatricula" class="form-label">Matrícula</label>
+                                <input type="text" class="form-control" id="modalMatricula"
+                                    placeholder="Ingrese la matrícula..." style="text-transform:uppercase">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveModal"><span
+                        class="spinner-border spinner-border-sm"
+                        style="margin-right: 5px;display:none;"></span>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Carga inicial de datos
+    fetchMoviles();
+
+    // Asignación de inputs
+    const inputNombre = document.getElementById('modalNombre');
+    const inputMatricula = document.getElementById('modalMatricula');
+    const esCamion = document.getElementById("checkEsCamion");
+
+    let moviles;
+
+    // Inicializo la tabla
+    const table = $('#tabMoviles').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        paging: false,
+        data: moviles,
+        columns: [
+            { data: 'idMovil' },
+            { data: 'nombre' },
+            { data: 'matricula' },
+            { data: null, wrap: true, "render": function (item) { return item.esCamion == 1 ? "SI" : "NO" } },
+            {
+                data: null,
+                render: function (item) {
+                    return `
+                    <div class="btn-group" role="group" style="height: 30px;">
+                    <button type="button" class="btn btn-secondary" title="Editar" id="edit" style="padding-top:3px;"><i
+                        class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-danger delete" title="Eliminar" style="padding-top:3px;"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                    `
+                }
+            }
+        ]
+    });
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchMoviles() {
+        const response = await fetch(urlBackend + "/moviles",{headers:{Authorization: 'Bearer '+token+''}});
+        const moviles = await response.json();
+        localStorage.setItem('moviles', JSON.stringify(moviles));
+        table.clear().draw();
+        table.rows.add(moviles).draw();
+    }
+
+    // [ELIMINAR UN MOVIL]
+    $('#tabMoviles tbody').on('click', '.delete', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const movil = table.row(fila).data();
+        const idModificar = movil.idMovil;
+
+        Swal.fire({
+            title: 'Está Seguro?',
+            text: "Se eliminará el registro " + movil.nombre,
+            icon: 'warning',
+            cancelButtonText: "Cancelar",
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(urlBackend + "/moviles/" + idModificar,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        method: "DELETE"
+                    })
+                    .then(function (res) { console.log(res); fetchMoviles(); })
+                    .catch(function (res) { console.log(res) })
+
+                Swal.fire(
+                    'Eliminado!',
+                    'El móvil ha sido borrado exitosamente!',
+                    'success'
+                )
+            }
+        })
+    });
+
+    // [EDITAR UN MOVIL]
+    $('#tabMoviles tbody').on('click', '#edit', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const movil = table.row(fila).data();
+        const idModificar = movil.idMovil;
+
+        document.getElementById('modalTitle').innerText = "Modificar el móvil";
+        document.getElementById('modalIdMovil').innerText = movil.idMovil;
+        modalNombre.value = movil.nombre;
+        modalMatricula.value = movil.matricula;
+        if (movil.esCamion == 1) {
+            esCamion.checked = true;
+        }
+
+        $('#modalCrearCliente').modal('toggle');
+        document.getElementById('btnSaveModal').onclick = function () {
+
+            fetch(urlBackend + "/moviles/" + idModificar,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "PUT",
+                    body: JSON.stringify({ nombre: inputNombre.value.trim(), matricula: inputMatricula.value.trim(), esCamion: checkEsCamion.checked ? 1 : 0 })
+                })
+                .then(function (res) { console.log(res); fetchMoviles(); })
+                .catch(function (res) { console.log(res) })
+            $('#modalCrearCliente').modal('toggle');
+        };
+    });
+
+    // [CREAR UN MOVIL]
+    function crearNuevo() {
+        $(".hideDIV").hide();
+        const form = document.getElementById("formModal");
+        document.getElementById('modalTitle').innerText = "Crear un móvil";
+        modalNombre.value = "";
+        modalMatricula.value = "";
+        $('#modalCrearCliente').modal('toggle');
+
+        document.getElementById('btnSaveModal').onclick = function () {
+            //Desactivo el boton y le agrego spinner
+            $("#btnSaveModal > span").show();
+            $("#btnSaveModal").prop('disabled', true);
+
+            fetch(urlBackend + "/moviles",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ nombre: inputNombre.value, matricula: inputMatricula.value, esCamion: esCamion.checked ? 1 : 0 })
+                })
+                .then(function (res) {
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    console.log(res);
+                    if (res.ok) {
+                        fetchMoviles();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Se ha creado el Móvil exitosamente!',
+                            showConfirmButton: true,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al crear!',
+                            showConfirmButton: true,
+                        });
+                    }
+                    $('#modalCrearCliente').modal('toggle');
+                })
+                .catch(function (res) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        showConfirmButton: true,
+                    });
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    $('#modalCrearCliente').modal('toggle');
+                })
+            $(".hideDIV").show();
+        }
+    }
+</script>
+
+<style>
+    th {
+        text-align: center !important;
+    }
+    .dataTables_filter {
+        float: left !important;
+    }
+</style>

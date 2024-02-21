@@ -1,0 +1,111 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Mis Clientes</h4>
+            <div class="col-10 offset-1">
+                <div class="col-12">
+                    <a class="btn btn-primary" href="/nuevoCliente" style="float:right; margin:10px"><i class="bi bi-plus-circle"></i> Nuevo</a>
+                </div>
+                <table class="table table-striped table-bordered text-center" id="tabClientes" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#Id</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Convenio</th>
+                            <th>Afiliación</th>
+                            <th>Email</th>
+                            <th>Celular</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    fetchClientes();
+
+    let clientes;
+
+    // Inicializo la tabla
+    const table = $('#tabClientes').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json",
+            "search":"Filtrar"
+        },
+        scrollY: '900px',
+        paging: false,
+        data: clientes,
+        columns: [
+            { data: 'idCliente' },
+            { data: 'nombre' },
+            { data: 'nombreTipoCliente' },
+            { data: 'nombreConvenio' },
+            { data: 'nombreAfiliacion' },
+            { data: null, render: () => '' },
+            { data: 'celular' },
+            {
+                data: null,
+                render: function (item) {
+                    return `
+                    <div class="btn-group" role="group" style="height: 30px;">
+                    <button type="button" class="btn btn-secondary" title="Editar" id="edit" style="padding-top:3px;"><i
+                        class="bi bi-pencil-square"></i></button>
+                </div>
+                    `
+                }
+            }
+        ]
+    });
+
+    // [IR A FICHA CLIENTE]
+    $('#tabClientes tbody').on('click', '#edit', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const cliTarget = table.row(fila).data();
+
+        const body = {
+            "targetCliente": cliTarget.idCliente,
+        }
+
+        fetch(apiFrontend + "/modificarCliente",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + ''
+                },
+                method: "POST",
+                body: JSON.stringify(body)
+            });
+        window.location.replace("/modificarCliente");
+    });
+
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchClientes() {
+        const response = await fetch(urlBackend + "/clientes/todosDTO", { headers: { Authorization: 'Bearer ' + token + '' } });
+        const clientes = await response.json();
+        // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+        table.clear().draw();
+        table.rows.add(clientes).draw();
+    }
+
+    // Actualizo el ancho de las columnas para reparar el scrollY
+    setTimeout(() => { table.columns.adjust().draw(); }, 100);
+</script>
+
+<style>
+    th {
+        text-align: center !important;
+    }
+
+    .dataTables_filter {
+        float: left !important;
+    }
+</style>

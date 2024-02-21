@@ -1,0 +1,752 @@
+<style>
+  .redClass {
+    background-color: black !important;
+  }
+
+  .classone>td {
+    background-color: #dddddd !important;
+  }
+
+  .classtwo {
+    background-color: #4F81BC;
+  }
+
+  .dataTables_scrollBody {
+    padding-bottom: 200px;
+    height: 600px;
+  }
+
+  .bordeRojo {
+    border-top: 10px solid #dc3545;
+  }
+
+  .bordeVerde {
+    border-top: 10px solid #198754;
+  }
+
+  .bordeGris {
+    border-top: 10px solid #393f3c;
+  }
+
+  .bordeAzul {
+    border-top: 10px solid #00b8d6;
+  }
+
+  .btnPendientes {
+    color: white;
+    background-color: #dc3545;
+  }
+
+  .btnAsignados {
+    color: white;
+    background-color: #198754;
+  }
+
+  .btnCancelados {
+    color: white;
+    background-color: #393f3c;
+  }
+
+  .btnFinalizados {
+    color: white !important;
+    background-color: #00b8d6;
+  }
+
+  .demo-inline-spacing a {
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 1px 3px;
+    background-color: white;
+  }
+
+  .demo-inline-spacing a:nth-child(1):hover {
+    background-color: #504dff;
+  }
+
+  .demo-inline-spacing a:nth-child(2):hover {
+    background-color: rgb(245, 66, 66);
+  }
+
+  .demo-inline-spacing a:nth-child(3):hover {
+    background-color: #effc3c;
+  }
+
+  .demo-inline-spacing a:nth-child(4):hover {
+    background-color: grey;
+  }
+
+  .demo-inline-spacing a:nth-child(5):hover {
+    background-color: #008000;
+  }
+</style>
+<div class="ps-md-1 pe-md-1 px-1 py-1 page-body">
+  <div class="card">
+
+    <div class="card-body" style="display: flex;gap:15px;flex-wrap: wrap;justify-content: space-around;">
+      <div style="display: flex;flex-wrap: wrap; gap: 13px;justify-content: center;">
+        <button type="button" class="btn btn-dark" onclick="fetchServicios(this)">ACTUALIZAR</button>
+        <button type="button" id="btnPendientes" class="btn btn-outline-danger position-relative"
+          onclick="pintarServicios(estados.PENDIENTE)">PENDIENTES<span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+            id="spanPendientes"></span></button>
+        <button type="button" id="btnAsignados" class="btn btn-outline-success position-relative"
+          onclick="pintarServicios(estados.ASIGNADO)">ASIGNADOS<span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+            id="spanAsignados"></span></button>
+        <button type="button" id="btnCancelados" class="btn btn-outline-secondary position-relative"
+          onclick="pintarServicios(estados.CANCELADO)">CANCELADOS<span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+            id="spanCancelados"></span></button>
+        <button type="button" id="btnFinalizados" class="btn btn-outline-primary position-relative"
+          onclick="pintarServicios(estados.FINALIZADO)">FINALIZADOS<span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+            id="spanFinalizados"></span></button>
+      </div>
+      <div style="display: inline-flex">
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked="">
+          <label class="btn btn-outline-primary" for="btnradio1">TODOS</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+          <label class="btn btn-outline-primary" for="btnradio2">MONTEVIDEO</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+          <label class="btn btn-outline-primary" for="btnradio3">INTERIOR/EXTERIOR</label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h6 class="card-title">OPERACIONES</h6>
+      <div class="dropdown card-action">
+        <a href="#" class="card-fullscreen">
+          <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M3 16m0 1a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1z">
+            </path>
+            <path d="M4 12v-6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-6"></path>
+            <path d="M12 8h4v4"></path>
+            <path d="M16 8l-5 5"></path>
+          </svg>
+        </a>
+        <a href="#" class="dropdown-toggle after-none" data-bs-toggle="dropdown" aria-expanded="false"
+          title="More Action">
+          <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"> </path>
+            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+            <path d="M8 12l0 .01"></path>
+            <path d="M12 12l0 .01"></path>
+            <path d="M16 12l0 .01"></path>
+          </svg>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end shadow rounded-4 p-2">
+          <a href="javascript:void(0)" class="dropdown-item rounded-pill"><i class="me-2 fa fa-share"></i>Share</a>
+
+          <div class="dropdown-divider"></div>
+          <a href="javascript:void(0)" class="dropdown-item rounded-pill card-options-remove"
+            data-toggle="card-remove"><i class="me-2 fa fa-trash"></i>Delete</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <table class="table table-bordered nowrap" id="miTabla" style="width: 100%">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th></th>
+            <th>Acciones</th>
+            <th>Tarea</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Ciudad</th>
+            <th>Localidad</th>
+            <th>Calle</th>
+            <th>Esquina</th>
+            <th>Dir.Traslado</th>
+            <th>Depto.Traslado</th>
+            <th>Loc.Traslado</th>
+            <th>Falla</th>
+            <th>Usuario</th>
+            <th>Móvil</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal ASIGNAR-->
+  <div class="modal fade" id="modalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <span id="hideIdTarea" style="display: none;"></span>
+      <span id="hideIdServicio" style="display: none;"></span>
+      <form id="formModal" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">ASIGNACIÓN DEL SERVICIO
+            <label class="form-label"> - Tarea N°:</label>
+            <label class="form-label" id="modalIdTarea"></label>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row justify-content-center">
+
+            <div class="col">
+              <div class="form-check form-switch col-6">
+                <input class="form-check-input" type="checkbox" id="checkEsConcesionario"
+                  style="transform: scale(1.2);">
+                <label class="form-check-label">Es Prestador?</label>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-4" style="padding-top: 5px;text-align: right;"><label
+                    class="form-label">Chofer/Concesionario: </label></div>
+                <div class="col-8">
+                  <select class="form-control" id="slcAsignarMovil"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="btnSaveModal"><span class="spinner-border spinner-border-sm"
+              style="margin-right: 5px;display:none;"></span>Asignar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Definición de Estados - Enum
+  const estados = Object.freeze({
+    PENDIENTE: 'P',
+    ASIGNADO: 'A',
+    CANCELADO: 'C',
+    FINALIZADO: 'F'
+  });
+
+  // Definición de Estados - Enum
+  const filtroUbicacion = Object.freeze({
+    TODOS: 'T',
+    MONTEVIDEO: 'M',
+    INTEXT: 'I' // Interior y Exterior
+  });
+
+  let estadoServicios = estados.PENDIENTE;
+  let filtroUbi = filtroUbicacion.TODOS;
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("checkEsConcesionario").addEventListener('change', () => popularSelectAsignar());
+
+  });
+
+  let servicios = [];
+
+
+  // Fetch carga de datos y pinto la tabla
+
+  async function fetchServicios() {
+
+    const response = await fetch(urlBackend + "/servicios/todosWebDTO", { headers: { Authorization: 'Bearer ' + token + '' } });
+    servicios = await response.json().then();
+
+    // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+    table.clear().draw();
+    pintarServicios(estados.PENDIENTE);
+
+
+    pendientes = servicios.filter((element, index, array) => { return element.estado == "P" || element.estado == "R" });
+
+
+    //document.getElementById("loader").innerHTML = '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>Cargando contenido...';
+    // sustituyo el loader por defecto
+    setTimeout(() => {
+      if (pendientes.length == 0)
+        document.getElementById("loader").innerHTML = "<p>No hay servicios</p>";
+    }, 200);
+    contarServicios();
+  }
+  fetchServicios();
+
+  var table = $('#miTabla').DataTable({
+    info: false,
+    paging: false,
+    scrollX: true,
+    data: servicios,
+    processing: true,
+    rowCallback: function (row, data, index) {
+      if (index % 2 === 0) {
+        $(row).addClass('classone');
+      } else {
+        $(row).addClass('classtwo');
+      }
+    },
+    language: {
+      url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+      zeroRecords: "<div id='loader' style='padding: 20px;display: flex;flex-direction: column;align-items: center;'><p>No hay servicios</p></div>"
+    },
+    columns: [
+      { data: 'idSrv' },
+      {
+        className: 'dt-control',
+        orderable: false,
+        data: null,
+        defaultContent: ''
+      }, {
+        orderable: false,
+        render: function () {
+          return `
+            <div class="d-flex align-items-center">
+              <div class="demo-inline-spacing">
+                <a title="Asignar el móvil" class="asignarSrv text-body"><i class="fa fa-car"></i></a>
+                ${estadoServicios == "P" ? "" : '<a title="Regresar a pendiente" class="regPendiente  text-body"><i class="fa fa-history"></i></a>'}
+                <a title="Editar el servicio" class="editarSrv text-body"><i class="fa fa-pencil"></i></a>
+                ${estadoServicios == "C" ? "" : '<a title="Cancelar el servicio" class="cancelBtn text-body"><i class="fa fa-trash"></i></a>'}
+                ${estadoServicios == "F" ? "" : '<a title="Terminar el servicio" class="deleteBtn text-body"><i class="fa fa-check"></i></a>'}
+              </div>
+            </div>`;
+        }
+      }, { data: 'idTarea' }, { data: 'fecha' }, { data: 'hora' }, { data: 'ciudadOrigen' }, { data: 'locOrigen' }, { data: 'calleOrigen' }, { data: 'esquinaOrigen' }, { data: 'calleDestino' }, { data: 'ciudadDestino' }, { data: 'locDestino' }, { data: 'falla' }, { data: 'usuario' },
+      {
+        render: function (data, type, row) {
+          return row.nombreMovil != null ? row.nombreMovil : row.nombrePrestador;
+        }
+      }
+    ],
+  });
+
+
+  // carga de datos
+  let moviles;
+  let concesionarios;
+  (async function cargarDatos() {
+    moviles = await JSON.parse(localStorage.getItem('turno'));
+    concesionarios = await JSON.parse(localStorage.getItem('concesionarios'));
+    popularSelectAsignar();
+  })();
+
+  function popularSelectAsignar() {
+    const selectAsignar = document.getElementById("slcAsignarMovil");
+    selectAsignar.innerText = "";
+    if (document.getElementById("checkEsConcesionario").checked) {
+      concesionarios.forEach(p => {
+        const option = document.createElement('option');
+        option.text = p.nombre;
+        option.value = p.idPrestador;
+        selectAsignar.add(option);
+      });
+    } else {
+      moviles.forEach(p => {
+        const option = document.createElement('option');
+        option.text = "[" + p.nombreMovil + "] - " + p.nombreChofer;
+        option.value = p.idChofer;
+        selectAsignar.add(option);
+      });
+    }
+  }
+
+  function pintarServicios(filtroEstado) {
+    let resultado = [];
+    let nombrePantalla;
+    if (filtroEstado == "P") {
+      resultado = servicios.filter((element, index, array) => { return element.estado == "P" || element.estado == "R" });
+      nombrePantalla = "Pendientes";
+      document.getElementsByClassName("table-bordered")[0].classList.add("bordeRojo");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeVerde");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeGris");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeAzul");
+    } else if (filtroEstado == "A") {
+      resultado = servicios.filter((element, index, array) => { return element.estado == "A" || element.estado == "X" });
+      nombrePantalla = "Asignados";
+      document.getElementsByClassName("table-bordered")[0].classList.add("bordeVerde");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeRojo");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeGris");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeAzul");
+    } else if (filtroEstado == "C") {
+      resultado = servicios.filter((element, index, array) => { return element.estado == "C" });
+      nombrePantalla = "Cancelados";
+      document.getElementsByClassName("table-bordered")[0].classList.add("bordeGris");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeRojo");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeVerde");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeAzul");
+    } else {
+      // finalizados
+      resultado = servicios.filter((element, index, array) => { return element.estado == "F" });
+      nombrePantalla = "Finalizados";
+      document.getElementsByClassName("table-bordered")[0].classList.add("bordeAzul");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeRojo");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeVerde");
+      document.getElementsByClassName("table-bordered")[0].classList.remove("bordeGris");
+    }
+    estadoServicios = filtroEstado;
+    pintarBotones();
+    table.clear().draw();
+    console.log(resultado);
+
+    table.rows.add(resultado).draw();
+    if (estadoServicios == 'P') {
+      table.column(15).visible(false);
+    } else {
+      table.column(15).visible(true);
+    }
+
+  }
+
+  function pintarBotones() {
+    const estado = estadoServicios;
+
+    switch (estado) {
+      case estados.ASIGNADO:
+        document.getElementById("btnAsignados").classList.add("btnAsignados");
+        document.getElementById("btnPendientes").classList.remove("btnPendientes");
+        document.getElementById("btnCancelados").classList.remove("btnCancelados");
+        document.getElementById("btnFinalizados").classList.remove("btnFinalizados");
+        break;
+      case estados.CANCELADO:
+        document.getElementById("btnCancelados").classList.add("btnCancelados");
+        document.getElementById("btnAsignados").classList.remove("btnPendientes");
+        document.getElementById("btnAsignados").classList.remove("btnAsignados");
+        document.getElementById("btnFinalizados").classList.remove("btnFinalizados");
+        break;
+      case estados.FINALIZADO:
+        document.getElementById("btnFinalizados").classList.add("btnFinalizados");
+        document.getElementById("btnPendientes").classList.remove("btnPendientes");
+        document.getElementById("btnAsignados").classList.remove("btnAsignados");
+        document.getElementById("btnCancelados").classList.remove("btnCancelados");
+        break;
+      default:
+        document.getElementById("btnPendientes").classList.add("btnPendientes");
+        document.getElementById("btnFinalizados").classList.remove("btnFinalizados");
+        document.getElementById("btnAsignados").classList.remove("btnAsignados");
+        document.getElementById("btnCancelados").classList.remove("btnCancelados");
+    }
+  }
+
+  // TERMINAR SERVICIO
+  $('#miTabla tbody').on('click', '.deleteBtn', function () {
+    const row = table.row($(this).parents('tr'));
+    const idServicio = row.data().idSrv;
+    row.remove().draw();
+    const res = servicios.filter(e => e.idSrv == idServicio);
+    res[0].estado = "F";
+
+    cambiarEstado(idServicio, "F");
+    if (document.getElementById("loader") != null) {
+      document.getElementById("loader").innerHTML = "<p>No hay servicios</p>";
+    }
+  });
+
+  // EDITAR SERVICIO
+  $('#miTabla tbody').on('click', '.editarSrv', function () {
+    const row = table.row($(this).parents('tr'));
+    const idServicio = row.data().idSrv;
+
+    const data = {
+      modificando: true,
+      tareaBuscada: row.data().idTarea,
+      fechaBuscada: row.data().fecha
+    }
+
+    fetch(apiFrontend + '/modificarServicio', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token + ''
+      },
+      body: JSON.stringify(data)
+    });
+    console.log(apiFrontend)
+    window.location.replace("/modificarServicio");
+  });
+
+  // CANCELAR SERVICIO
+  $('#miTabla tbody').on('click', '.cancelBtn', function () {
+    const row = table.row($(this).parents('tr'));
+    const idServicio = row.data().idSrv;
+    row.remove().draw();
+    const res = servicios.filter(e => e.idSrv == idServicio);
+    res[0].estado = "C";
+
+    cambiarEstado(idServicio, "C");
+
+    if (document.getElementById("loader") != null) {
+      document.getElementById("loader").innerHTML = "<p>No hay servicios</p>";
+    }
+  });
+
+  // Evento asignación desde la tabla
+  let rowAsignar;
+  $('#miTabla tbody').on('click', '.asignarSrv', function () {
+    $('#modalAsignar').modal('toggle');
+    const row = table.row($(this).parents('tr'));
+    const data = row.data();
+    rowAsignar = row;
+    // envío de datos al modal
+    document.getElementById("modalIdTarea").innerText = data.idTarea;
+    document.getElementById("hideIdTarea").innerText = data.idTarea;
+    document.getElementById("hideIdServicio").innerText = data.idSrv;
+  });
+
+  // Evento regresar a pendiente
+  $('#miTabla tbody').on('click', '.regPendiente', function () {
+
+    const row = table.row($(this).parents('tr'));
+    const idServicio = row.data().idSrv;
+    row.remove().draw();
+    const res = servicios.filter(e => e.idSrv == idServicio);
+    res[0].estado = "P";
+    res[0].nombreMovil = "";
+    res[0].nombreChofer = "";
+
+    fetch(urlBackend + "/servicios/desasignar/" + idServicio,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token + ''
+        },
+        method: "PATCH"
+      });
+
+    if (document.getElementById("loader") != null) {
+      document.getElementById("loader").innerHTML = "<p>No hay servicios</p>";
+    }
+    contarServicios();
+  });
+
+  // ASIGNACIÓN DE SERVICIOS
+  document.getElementById("btnSaveModal").addEventListener("click", () => {
+
+    const selectAsignar = document.getElementById("slcAsignarMovil");
+
+    console.log("Servicio: " + document.getElementById("hideIdServicio").innerText + ", Tarea: " + document.getElementById("hideIdTarea").innerText + ", idChofer: " + selectAsignar.value);
+
+    const idServicio = document.getElementById("hideIdServicio").innerText;
+    let bodyData;
+    const idMovilTarget = parseInt(selectAsignar.value);
+    const nombreChofTarget = document.getElementById("slcAsignarMovil").options[document.getElementById("slcAsignarMovil").selectedIndex].text;
+    let esPrestador;
+    if (document.getElementById("checkEsConcesionario").checked) {
+      esPrestador = true;
+      bodyData = {
+        "idPrestador": parseInt(selectAsignar.value)
+      }
+    } else {
+      esPrestador = false;
+      bodyData = {
+        "idChofer": parseInt(selectAsignar.value)
+      }
+    }
+
+    fetch(urlBackend + "/servicios/asignarMovil/" + idServicio,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token + ''
+        },
+        method: "PATCH",
+        body: JSON.stringify(bodyData)
+      }).then(response => {
+        if (!response.ok) {
+          response.text().then(text => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Hubo un error al asignar!',
+              text: text,
+              showConfirmButton: true,
+            });
+          })
+        } else {
+          // document.getElementsByTagName("form")[0].reset();
+
+          const idTargetSrv = rowAsignar.data().idSrv;
+          const res = servicios.filter(e => e.idSrv == idTargetSrv);
+          res[0].estado = "A";
+
+          if (esPrestador) {
+            res[0].idPrestador = idMovilTarget;
+            res[0].nombrePrestador = nombreChofTarget;
+          } else {
+            res[0].idMovil = idMovilTarget;
+            res[0].nombreMovil = nombreChofTarget;
+          }
+          rowAsignar.remove().draw();
+          $('#modalAsignar').modal('toggle');
+          contarServicios();
+        }
+        return response.json();
+      }).then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Parece que no hay conexión con la base de datos!',
+          text: error,
+          showConfirmButton: true,
+        });
+      }
+      );
+    contarServicios();
+  });
+
+  async function cambiarEstado(idServicio, estado) {
+    const bodyData = {
+      "estado": estado
+    }
+
+    fetch(urlBackend + "/servicios/" + idServicio,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token + ''
+        },
+        method: "PATCH",
+        body: JSON.stringify(bodyData)
+      }).then(response => {
+        if (!response.ok) {
+          response.text().then(text => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Hubo un error al cambiar el estado del servicio!',
+              text: text,
+              showConfirmButton: true,
+            });
+          })
+        } else {
+          console.log(response);
+        }
+        // return response.json();
+      }).then(data => {
+        //console.log(data);
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Parece que no hay conexión con la base de datos!',
+          text: error,
+          showConfirmButton: true,
+        });
+      }
+      );
+    contarServicios();
+  }
+
+  // Add event listener for opening and closing details
+  table.on('click', 'td.dt-control', function (e) {
+    let tr = e.target.closest('tr');
+    let row = table.row(tr);
+
+    if (row.child.isShown()) {
+      // This row is already open - close it
+      row.child.hide();
+    }
+    else {
+      // Open this row
+      row.child(format(row.data())).show();
+    }
+  });
+
+
+
+
+
+  // Formatting function for row details - modify as you need
+  function format(d) {
+    // `d` is the original data object for the row
+    return (
+      `
+  <div class="col-6" style="float: left;">
+    
+    <br>
+    <button type="button" class="btn btn-outline-secondary" style="float: right;margin-right: 30px;" onclick="copiarContenido(this)" title="Copiar al portapapeles"><i class="fa fa-clipboard"></i></button>
+    <p><strong><i class="fa fa-list-check"></i> Tarea:</strong> F${d.idTarea}<span style="color:white">-----------</span><i class="fa fa-calendar-days"></i> ${d.fecha}
+    <p><strong><i class="fa fa-user"></i> Solicita:</strong> ${d.solicitante} - <i class="fa fa-phone"></i> ${d.celSolicitante}</p>
+    <p><strong><i class="fa fa-car"></i> Vehículo:</strong> [${d.matricula + "] " + d.marca + " " + d.modelo + " " + d.color}</p>
+    ----------------------------------------------------
+    <p>${d.paisOrigen} - ${d.locOrigen} - ${d.ciudadOrigen} - ${d.zona} </p>
+    <p><strong><i class="fa fa-location-dot"></i> Ubicado en:</strong> ${d.calleOrigen} ${d.numPuertaOrigen} ${d.esquinaOrigen}</p>
+    ----------------------------------------------------
+    <p><strong><i class="fa fa-car-burst"></i> Falla:</strong> ${d.falla}</p>
+    ----------------------------------------------------
+    <p>${d.paisDestino != undefined ? d.paisDestino + "-" : ""} ${d.locDestino} - ${d.ciudadDestino} </p>
+    <p><strong><i class="fa fa-route"></i> Traslada hacia:</strong> ${d.calleDestino}</p>
+    ----------------------------------------------------
+      <p><strong><i class="fa fa-comment-dots"></i> Observaciones:</strong> ${d.observaciones}</p>
+    </div>
+  <div class="col-6" style="float: left;">
+    ${(d.latitud != undefined && d.longitud != undefined) && (d.latitud != "" && d.longitud != "") ? `<div class="mapouter">
+                    <div class="gmap_canvas"><iframe width="800" height="430" id="gmap_canvas"
+                            src="https://maps.google.com/maps?q=loc:${d.latitud}+${d.longitud}&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                            frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+                    <style>
+                        .mapouter {
+                            position: relative;
+                            text-align: right;
+                            height: 348px;
+                            width: 623px;
+                        }
+                        .gmap_canvas {
+                            overflow: hidden;
+                            background: none !important;
+                            height: 430px;
+                            width: 800px;
+                        }
+                    </style>
+                </div>` : "<div style='text-align: center;padding-top: 190px;'>No hay datos de latitud, longitud proporcionados</div>"}
+            </div>`
+    )
+  }
+
+  // Actualizo el ancho de las columnas para reparar el scrollY
+  setTimeout(() => { table.columns.adjust().draw(); }, 100);
+
+
+  function copiarContenido(target) {
+    let texto = target.parentElement.innerText;
+
+    var copyFrom = document.createElement("textarea");
+    copyFrom.textContent = texto;
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(copyFrom);
+    copyFrom.select();
+    document.execCommand('copy');
+    body.removeChild(copyFrom);
+
+    SnackBar({
+      message: "Copiado!",
+      status: "success",
+      timeout: 1500,
+      position: "tc"
+    });
+  }
+
+  // arreglar desfasaje de columnas al maximizar
+  document.getElementsByClassName("card-fullscreen")[0].addEventListener("click", () => { setTimeout(() => { table.columns.adjust().draw(); }, 100); });
+
+  // para pintar los circulitos informativos de los botones
+  function contarServicios() {
+    let pendientes = servicios.filter(s => s.estado == "P" || s.estado == "R").length;
+    let asignados = servicios.filter(s => s.estado == "A" || s.estado == "X").length;
+    let cancelados = servicios.filter(s => s.estado == "C").length;
+    let finalizados = servicios.filter(s => s.estado == "F").length;
+
+    pendientes == 0 ? document.getElementById("spanPendientes").innerText = "" : document.getElementById("spanPendientes").innerText = pendientes;
+    asignados == 0 ? document.getElementById("spanAsignados").innerText = "" : document.getElementById("spanAsignados").innerText = asignados;
+    cancelados == 0 ? document.getElementById("spanCancelados").innerText = "" : (document.getElementById("spanCancelados").innerText = cancelados);
+    finalizados == 0 ? document.getElementById("spanFinalizados").innerText = "" : document.getElementById("spanFinalizados").innerText = finalizados;
+  }
+</script>

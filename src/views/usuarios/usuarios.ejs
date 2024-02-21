@@ -1,0 +1,317 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Gestión de Usuarios</h4>
+            <div class="col-10 offset-1">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="crearNuevo()"
+                        style="float:right; margin:10px">
+                        <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                    </button>
+                </div>
+
+                <table class="table table-striped table-bordered text-center" id="tabUsuario" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#Id</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modarlCrearUsr" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="hideDIV">
+                                    <label class="form-label">ID:</label>
+                                    <label class="form-label" id="modalIdUsuario"></label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label for="modalNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="modalNombre"
+                                    placeholder="Ingrese el nombre" style="text-transform:uppercase" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="modalEmail" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="modalEmail"
+                                    placeholder="INGRESE EL EMAIL" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label for="modalClave" class="form-label">Clave</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="modalClave" placeholder="INGRESE LA CONTRASEÑA" aria-label="Password" aria-describedby="togglePasswordButton">
+                                <button type="button" class="btn btn-outline-secondary" id="togglePasswordButton">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                            <div class="col-12 col-md-6">
+                                <label for="modalNombre" class="form-label">Rol</label>
+                                <select class="form-control" id="modalRol">
+                                    <option value="0">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveModal"><span
+                        class="spinner-border spinner-border-sm"
+                        style="margin-right: 5px;display:none;"></span>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    fetchRoles();
+    // Carga inicial de datos
+    fetchUsuarios();
+
+
+// JavaScript toggle input PASSWORD
+const modalClave = document.getElementById('modalClave');
+        const togglePasswordButton = document.getElementById('togglePasswordButton');
+        const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+        togglePasswordButton.addEventListener('click', function () {
+            if (modalClave.type === 'password') {
+                modalClave.type = 'text';
+                togglePasswordIcon.classList.remove('bi-eye');
+                togglePasswordIcon.classList.add('bi-eye-slash');
+            } else {
+                modalClave.type = 'password';
+                togglePasswordIcon.classList.remove('bi-eye-slash');
+                togglePasswordIcon.classList.add('bi-eye');
+            }
+        });
+//--------------------------------------------------
+
+    // Asignación de inputs
+    const inputNombre = document.getElementById('modalNombre');
+    const inputEmail = document.getElementById('modalEmail');
+    const inputClave = document.getElementById('modalClave');
+
+    let auxiliadores;
+
+    // Inicializo la tabla
+    const table = $('#tabUsuario').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        scrollY: '800px',
+        paging: false,
+        data: auxiliadores,
+        columns: [
+            { data: 'idUsuario' },
+            { data: 'nombre' },
+            { data: 'email' },
+            { data: 'rol.nombre' },
+            {
+                data: null,
+                render: function (item) {
+                    return `
+                    <div class="btn-group" role="group" style="height: 30px;">
+                    <button type="button" class="btn btn-secondary" title="Editar" id="edit" style="padding-top:3px;"><i
+                        class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-danger delete" title="Eliminar" style="padding-top:3px;"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                    `
+                }
+            }
+        ]
+    });
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchUsuarios() {
+        const response = await fetch(urlBackend + "/usuarios",{headers:{Authorization: 'Bearer '+token+''}});
+        const usuarios = await response.json();
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+        // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+        table.clear().draw();
+        table.rows.add(usuarios).draw();
+    }
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchRoles() {
+        const response = await fetch(urlBackend + "/roles",{headers:{Authorization: 'Bearer '+token+''}});
+        const roles = await response.json();
+        const arr = Array.from(roles);
+        document.getElementById("modalRol").innerHTML = "";
+        arr.forEach(rol => {
+            document.getElementById("modalRol").innerHTML +=`<option value="${rol.id}">${rol.nombre}</option>`;
+        });
+    }
+
+    // [ELIMINAR UN USUARIO]
+    $('#tabUsuario tbody').on('click', '.delete', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const usuario = table.row(fila).data();
+        const idModificar = usuario.idUsuario;
+
+        Swal.fire({
+            title: 'Está Seguro?',
+            text: "Se eliminará el usuario " + usuario.nombre,
+            icon: 'warning',
+            cancelButtonText: "Cancelar",
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(urlBackend + "/usuarios/" + idModificar,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer '+token+''
+                        },
+                        method: "DELETE"
+                    })
+                    .then(function (res) { console.log(res); fetchUsuarios(); })
+                    .catch(function (res) { console.log(res) })
+
+                Swal.fire(
+                    'Eliminado!',
+                    'El Usuario ha sido borrado exitosamente!',
+                    'success'
+                )
+            }
+        })
+    });
+
+    // [EDITAR UN USUARIO]
+    $('#tabUsuario tbody').on('click', '#edit', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const usuario = table.row(fila).data();
+        const idModificar = usuario.idUsuario;
+
+        document.getElementById('modalTitle').innerText = "Modificar Usuario";
+        document.getElementById('modalIdUsuario').innerText = usuario.idUsuario;
+        modalNombre.value = usuario.nombre;
+        modalEmail.value = usuario.email;
+
+        $('#modarlCrearUsr').modal('toggle');
+        document.getElementById('btnSaveModal').onclick = function () {
+
+            fetch(urlBackend + "/usuarios/" + idModificar,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "PUT",
+                    body: JSON.stringify({ nombre: inputNombre.value.trim(), celular: inputEmail.value.trim() })
+                })
+                .then(function (res) { console.log(res); fetchUsuarios(); })
+                .catch(function (res) { console.log(res) })
+
+            $('#modarlCrearUsr').modal('toggle');
+        };
+    });
+
+    // [CREAR UN USUARIO]
+    function crearNuevo() {
+        $(".hideDIV").hide();
+        const form = document.getElementById("formModal");
+        document.getElementById('modalTitle').innerText = "Nuevo Usuario";
+        modalNombre.value = "";
+        modalEmail.value = "";
+        modalClave.value = "";
+        const idRol = document.getElementById("modalRol").value;
+        $('#modarlCrearUsr').modal('toggle');
+
+        document.getElementById('btnSaveModal').onclick = function () {
+            //Desactivo el boton y le agrego spinner
+            $("#btnSaveModal > span").show();
+            $("#btnSaveModal").prop('disabled', true);
+
+
+            fetch(urlBackend + "/usuarios",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ nombre: inputNombre.value, email: inputEmail.value, clave:modalClave.value, idRol:idRol })
+                })
+                .then(function (res) {
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    console.log(res);
+                    if (res.ok) {
+                        fetchUsuarios();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Se ha creado el Auxiliador exitosamente!',
+                            showConfirmButton: true,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al crear!',
+                            showConfirmButton: true,
+                        });
+                    }
+                    $('#modarlCrearUsr').modal('toggle');
+                })
+                .catch(function (res) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        showConfirmButton: true,
+                    });
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    $('#modarlCrearUsr').modal('toggle');
+                })
+            $(".hideDIV").show();
+        }
+    }
+    // Actualizo el ancho de las columnas para reparar el scrollY
+    setTimeout(() => { table.columns.adjust().draw(); }, 100);
+</script>
+
+<style>
+    th {
+        text-align: center !important;
+    }
+
+    .dataTables_filter {
+        float: left !important;
+    }
+</style>

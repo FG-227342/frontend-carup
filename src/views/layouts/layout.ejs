@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+	<script src="js/jquery-3.7.1.min.js"></script>
+	<script src="js/moment-with-locales.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<script src="js/daterangepicker.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<title>CAR-UP</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--[ Favicon]-->
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+	<!--[ Template main css file ]-->
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="/css/styles.css">
+	<link rel="stylesheet" href="/css/daterangepicker.css">
+	<link rel="stylesheet" href="/css/js-snackbar.min.css">
+
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+
+
+</head>
+<script>
+	const urlBackend = "<%= userData[0].urlBackend %>";
+	const apiFrontend = "<%= userData[0].urlFrontend %>";
+	const token = "<%= userData[0].tokenStr.tkn %>";
+</script>
+
+<body data-bvite="theme-CeruleanBlue" class="layout-border svgstroke-a layout-default">
+
+	<!-- start: main grid layout -->
+	<main class="container-fluid px-0">
+
+		<!-- start: project logo -->
+		<div class="px-md-4 px-2 pt-2 pb-2 brand" data-bs-theme="none">
+			<div>
+				<div class="d-flex align-items-center pt-1" style="justify-content:space-around">
+					<button class="btn d-inline-flex d-xl-none border-0 p-0 pe-2" type="button"
+						data-bs-toggle="offcanvas" data-bs-target="#offcanvas_Navbar">
+						<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+							viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+							stroke-linejoin="round">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+							<path d="M4 6l16 0"></path>
+							<path d="M4 12l16 0"></path>
+							<path d="M4 18l16 0"></path>
+						</svg>
+					</button>
+					<!--[ Start:: Brand Logo icon ]-->
+					<a href="/" class="brand-icon text-decoration-none d-none d-xl-inline-flex align-items-center"
+						title="Inicio">
+						<svg width="112" height="45" xmlns="http://www.w3.org/2000/svg"
+							xmlns:svg="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" version="1.0">
+							<g class="layer">
+								<title>Truck-Inicio</title>
+								<g fill="var(--primary-color)" id="svg_1"
+									transform="matrix(0.026878 0 0 -0.026878 32 45.3357)">
+									<path
+										d="m1784.59,1245.31c-13,-197 -27,-344 -30,-328c-4,17 -19,47 -33,68c-14,21 -29,47 -32,57c-10,30 -100,67 -262,105c-63,16 -171,55 -285,104c-318,138 -401,156 -718,154c-222,-1 -589,-19 -600,-29c-4,-5 15,-20 33,-27c5,-1 -8,-20 -29,-42c-82,-87 -94,-111 -94,-189c0,-52 -6,-83 -20,-111c-28,-56 -27,-130 2,-149c22,-13 150,-56 169,-56c5,0 9,18 9,40c0,83 59,158 142,180c117,32 245,-85 222,-205l-6,-35l476,0l476,0l0,55c0,96 46,158 135,185c54,16 113,0 162,-43c45,-39 63,-82 63,-147l0,-50l69,0c76,0 85,5 107,67l13,38l1,-51c0,-28 -3,-72 -6,-98l-7,-46l-151,0l-151,0l37,25c67,45 87,152 40,214c-33,44 -69,64 -124,69c-44,3 -59,0 -87,-20c-51,-34 -73,-71 -78,-125c-5,-59 18,-108 66,-140l34,-23l-599,0l-599,0l33,20c52,32 74,75 70,140c-5,65 -26,99 -81,131c-47,26 -124,23 -165,-8c-89,-67 -87,-207 4,-264c17,-10 41,-19 53,-19c82,0 -51,-29 -552,-122l-572,-105l2,-29c6,-76 28,-99 84,-87c20,4 37,16 48,34l16,29l383,0l382,0l0,25c0,20 -5,25 -26,25c-24,0 -25,2 -22,47c3,52 7,54 107,68l51,7l0,-49c0,-36 7,-58 26,-87c22,-31 25,-45 20,-78c-10,-59 2,-108 25,-108c18,0 19,11 21,173c1,94 3,151 5,125c3,-34 8,-48 19,-48c18,0 18,-26 -1,-79l-14,-41l27,0c24,0 30,6 47,57c14,39 26,59 40,63c11,3 40,18 63,34c77,52 214,45 267,-14c10,-11 29,-20 42,-20c16,0 27,-8 33,-26c6,-14 8,-30 5,-34c-3,-5 -3,-27 1,-49c6,-38 8,-39 28,-27c11,8 62,19 112,25c132,16 134,16 141,-19c6,-34 28,-40 36,-10c5,18 14,20 91,20c79,0 86,-2 86,-20c0,-15 7,-20 25,-20c18,0 25,5 25,20c0,13 7,20 20,20c13,0 20,-7 20,-20c0,-19 7,-20 190,-20c183,0 190,1 190,20c0,13 7,20 20,20c13,0 20,-7 20,-20c0,-24 35,-28 44,-5c8,22 336,22 336,0c0,-8 7,-15 15,-15c8,0 15,7 15,15c0,9 9,15 25,15c18,0 23,-4 19,-15c-4,-8 -1,-15 4,-15c7,0 9,17 5,48c-6,56 8,116 40,163c26,40 98,79 144,79c29,0 33,-3 33,-25c0,-22 -4,-25 -33,-25c-81,0 -152,-68 -163,-157l-4,-38l13,34c20,50 75,111 121,132c48,22 133,25 179,6c44,-19 95,-63 114,-100c8,-17 24,-60 34,-95c30,-105 32,-106 179,-96c69,4 145,7 169,6l43,-1l-5,407c-6,387 -24,733 -42,777c-5,11 -13,23 -19,27c-6,4 -176,8 -378,8c-320,0 -369,-2 -382,-16c-14,-13 -16,-65 -16,-410l0,-394l85,0c50,0 85,-4 85,-10c0,-6 -45,-10 -115,-10l-115,0l0,470l0,470l-98,0l-98,0l-24,-357zm940,132c0,-8 -7,-15 -15,-15c-23,0 -22,-255 1,-268c10,-6 14,-19 12,-38c-3,-28 -5,-29 -48,-25c-58,4 -80,13 -172,69l-78,47l0,122l0,123l150,0c127,0 150,-2 150,-15zm76,-6c16,-17 20,-46 28,-175c5,-85 8,-156 5,-158c-2,-2 -24,-6 -49,-7l-45,-4l0,182c0,179 0,183 21,183c11,0 29,-9 40,-21zm-2171,-84c4,-47 5,-89 1,-92c-6,-6 -344,15 -408,26l-38,6l48,72l47,73l172,0l171,0l7,-85zm209,45c155,-39 262,-92 290,-142c25,-44 15,-60 -17,-30c-27,25 -57,29 -57,7c0,-10 -10,-15 -27,-15c-48,1 -313,27 -318,31c-5,6 -25,128 -25,157c0,29 10,28 154,-8zm-696,-396c31,-20 55,-78 47,-114c-9,-39 -50,-78 -92,-86c-104,-20 -173,106 -101,184c42,45 93,51 146,16zm1282,11c93,-48 93,-166 1,-205c-73,-30 -151,24 -151,104c0,49 21,83 64,102c40,17 51,17 86,-1zm-1670,-440l0,-45l-232,1c-128,1 -224,4 -213,6c36,7 430,81 438,82c4,1 7,-19 7,-44z"
+										id="svg_2" />
+									<path
+										d="m291.59,549.31c-84,-27 -146,-108 -147,-193c0,-50 40,-133 77,-160c122,-89 291,-28 322,116c32,147 -111,282 -252,237zm145,-104c57,-57 46,-163 -20,-197c-82,-42 -170,-8 -192,74c-14,51 10,114 54,142c47,29 118,20 158,-19z"
+										id="svg_3" />
+									<path
+										d="m317.59,422.31c-46,-19 -57,-83 -20,-118c43,-41 109,-19 123,40c5,22 0,33 -24,58c-32,31 -43,34 -79,20z"
+										id="svg_4" />
+									<path
+										d="m2232.59,552.31c-47,-14 -88,-44 -115,-84c-22,-30 -28,-52 -31,-105c-3,-79 20,-129 83,-173c123,-87 298,-7 313,142c13,140 -121,259 -250,220zm118,-89c66,-40 80,-129 28,-190c-100,-119 -288,21 -201,150c40,60 113,77 173,40z"
+										id="svg_5" />
+									<path
+										d="m2240.59,411.31c-50,-39 -24,-129 38,-129c37,0 76,37 76,71c0,34 -39,79 -68,79c-11,0 -31,-9 -46,-21z"
+										id="svg_6" />
+								</g>
+							</g>
+						</svg>
+						<span class="fw-bold ps-2 fs-5 d-none d-xl-inline-flex text-gradient">CAR.UP</span>
+					</a>
+				</div>
+			</div>
+			<div class="d-none layout-a-action">
+				<div class="mb-2">
+					<a class="d-flex align-items-center lh-sm p-0" href="#" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false" title="Usuario">
+						<img class="avatar rounded-circle border border-3 shadow" src="/imgs/profile_av.png"
+							alt="avatar">
+					</a>
+					<div class="dropdown-menu dropdown-menu-end shadow p-2 p-xl-3 rounded-4">
+						<div class="bg-body p-3 rounded-3">
+							<h4 class="mb-1 title-font text-gradient">Federico Guzzo</h4>
+							<p class="small text-muted">fguzzo@carup.com.uy</p>
+							<input type="text" class="form-control form-control-sm" placeholder="Update my status">
+						</div>
+						<ul class="list-unstyled mt-3">
+							<li><a class="dropdown-item rounded-pill" aria-label="my profile"
+									href="my-profile.html">Perfil</a></li>
+							<li><a class="dropdown-item rounded-pill" aria-label="account settings"
+									href="account-settings.html">Configuración</a></li>
+							<li class="dropdown-divider"></li>
+						</ul>
+						<a class="btn py-2 btn-primary w-100 mt-3 rounded-pill" href="/logout" role="button">Cerrar sesión</a>
+					</div>
+				</div>
+				<a href="#" class="btn p-1" title="Sign out">
+					<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+						viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+						stroke-linejoin="round">
+						<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+						<path d="M7 6a7.75 7.75 0 1 0 10 0"></path>
+						<path d="M12 4l0 8"></path>
+					</svg>
+				</a>
+			</div>
+		</div>
+
+		<!-- start: page header -->
+		<header class="px-md-4 px-2" data-bs-theme="none">
+			<div class="d-flex justify-content-between align-items-center py-2 w-100">
+				<ul class="header-menu flex-grow-1">
+					<!--[ Start:: notification ]-->
+					<li class="nav-item dropdown px-md-1 d-none d-md-inline-flex">
+						<a class="dropdown-toggle gray-6" href="#" role="button" data-bs-toggle="dropdown"
+							aria-expanded="false" title="notification">
+							<span class="bullet-dot bg-primary animation-blink"></span>
+							<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+								viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path
+									d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6">
+								</path>
+								<path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
+								<path d="M21 6.727a11.05 11.05 0 0 0 -2.794 -3.727"></path>
+								<path d="M3 6.727a11.05 11.05 0 0 1 2.792 -3.727"></path>
+							</svg>
+						</a>
+						<div class="dropdown-menu shadow rounded-4 notification" id="NotificationsDiv">
+							<div class="card border-0">
+								<div class="card-header d-flex justify-content-between align-items-center py-3">
+									<h4 class="mb-0 text-gradient title-font">Notificaciones</h4>
+									<a href="#" class="btn btn-link" title="view all">Ver Todas</a>
+								</div>
+								<ul class="card-body p-0 list-unstyled mb-0 custom_scroll ps-2" style="height: 400px;">
+									<li class="pe-2">
+										<a class="d-flex p-lg-3 p-2 rounded-3" href="javascript:void(0);">
+											<div class="avatar sm">
+												<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg"
+													viewBox="0 0 24 24" stroke="currentColor" fill="none"
+													stroke-linecap="round" stroke-linejoin="round">
+													<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+													<path
+														d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3">
+													</path>
+												</svg>
+											</div>
+											<div class="flex-fill ms-3">
+												<span class="d-flex justify-content-between"><small
+														class="text-primary">Tiene una notificación</small><small
+														class="text-muted">11:30 AM Hoy</small></span>
+												<p class="mb-0 mt-1">Se implementarán a futuro</p>
+											</div>
+										</a>
+									</li>
+
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li class="nav-item py-2 py-md-1 col-auto">
+						<div class="vr d-none d-sm-flex h-100 mx-sm-2"></div>
+					</li>
+					<!--[ Start:: theme light/dark ]-->
+					<li class="nav-item dropdown px-md-1">
+						<a class="dropdown-toggle gray-6" href="#" id="bd-theme" data-bs-toggle="dropdown"
+							aria-expanded="false">
+							<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"
+								class="theme-icon-active">
+								<use href="#sun-fill"></use>
+							</svg>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end p-2 p-xl-3 shadow rounded-4"
+							aria-labelledby="bd-theme">
+							<li class="mb-1"><a class="dropdown-item rounded-pill" href="#"
+									data-bs-theme-value="light"><svg class="avatar xs me-2 opacity-50 theme-icon"
+										fill="currentColor">
+										<use href="#sun-fill"></use>
+									</svg> Light</a></li>
+							<li class="mb-1"><a class="dropdown-item rounded-pill active" href="#"
+									data-bs-theme-value="dark"><svg class="avatar xs me-2 opacity-50 theme-icon"
+										fill="currentColor">
+										<use href="#moon-stars-fill"></use>
+									</svg> Dark</a></li>
+							<li class="mb-1"><a class="dropdown-item rounded-pill" href="#"
+									data-bs-theme-value="auto"><svg class="avatar xs me-2 opacity-50 theme-icon"
+										fill="currentColor">
+										<use href="#circle-half"></use>
+									</svg> Auto</a></li>
+						</ul>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							viewBox="0 0 16 16" style="display: none;">
+							<symbol id="sun-fill" viewBox="0 0 16 16">
+								<path
+									d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+							</symbol>
+							<symbol id="moon-stars-fill" viewBox="0 0 16 16">
+								<path
+									d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
+								<path
+									d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
+							</symbol>
+							<symbol id="circle-half" viewBox="0 0 16 16">
+								<path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+							</symbol>
+						</svg>
+					</li>
+					<!--[ Start:: theme setting ]-->
+					<li class="nav-item dropdown px-md-1">
+						<a class="dropdown-toggle gray-6" href="#offcanvas_setting" data-bs-toggle="offcanvas"
+							aria-expanded="false" title="template setting">
+							<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+								viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path
+									d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z">
+								</path>
+								<path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+							</svg>
+						</a>
+					</li>
+					<li class="nav-item py-2 py-md-1 col-auto">
+						<div class="vr d-none d-sm-flex h-100 mx-sm-2"></div>
+					</li>
+					<!--[ Start:: user detail ]-->
+					<li class="nav-item user ms-3">
+						<a class="dropdown-toggle gray-6 d-flex text-decoration-none align-items-center lh-sm p-0"
+							href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="User"
+							data-bs-auto-close="outside">
+							<img class="avatar rounded-circle border border-3" src="/imgs/profile_av.png" alt="avatar">
+							<span class="ms-2 fs-6 d-none d-sm-inline-flex">@<%=userData[0].userName%></span>
+						</a>
+						<div class="dropdown-menu dropdown-menu-end shadow p-2 p-xl-3 rounded-4">
+							<div class="bg-body p-3 rounded-3">
+								<h4 class="mb-1 title-font text-gradient">
+									<%=userData[0].userName%>
+								</h4>
+								<p class="small text-muted">
+									<%=userData[0].userEmail%>
+								</p>
+							</div>
+							<ul class="list-unstyled mt-3">
+								<li><a class="dropdown-item rounded-pill" aria-label="my profile"
+										href="">Mi Perfil</a></li>
+								<li><a class="dropdown-item rounded-pill" aria-label="my task" href="">Configuración</a></li>
+							</ul>
+							<a class="btn py-2 btn-primary w-100 mt-3 rounded-pill" href="/logout"
+								role="button">Cerrar Sesión</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</header>
+
+		<!-- start: page menu link -->
+		<%- include('partials/leftBar.ejs')%>
+
+		<%- include('partials/rightBar.ejs')%>
+
+			<!-- start: page header area -->
+			<div class="px-md-4 px-2 py-2 page-header" data-bs-theme="none">
+
+				<div class="d-flex align-items-center">
+					<button class="btn d-none d-xl-inline-flex me-3 px-0 sidebar-toggle" type="button">
+						<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+							viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+							stroke-linejoin="round">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+							<path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z">
+							</path>
+							<path d="M9 4v16"></path>
+							<path d="M15 10l-2 2l2 2"></path>
+						</svg>
+					</button>
+					<ol class="breadcrumb mb-0 bg-transparent">
+						<%  if (breadcrumbs.length != 0) { %>
+							<li class="breadcrumb-item">
+								<a href="<%= breadcrumbs[0].url %>"><%= breadcrumbs[0].text %> </a>
+							</li>
+							<li class="breadcrumb-item">
+								<a style="color:grey" href="<%= breadcrumbs[1].url %>"><%= breadcrumbs[1].text %> </a>
+							</li>
+							<%  if (breadcrumbs[2] != null) { %>
+								<li class="breadcrumb-item">
+									<a style="color:grey" href="<%= breadcrumbs[2].url %>"><%= breadcrumbs[2].text %> </a>
+								</li>
+								<% } %>
+							<% } %>
+					</ol>
+				</div>
+				<ul class="list-unstyled action d-flex align-items-center mb-0">
+					<!--
+					<li class="dropdown">
+						<a href="#" data-bs-toggle="dropdown" aria-expanded="false">
+							<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="22" viewBox="0 0 24 24"
+								stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path
+									d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z">
+								</path>
+								<path d="M9 12l6 0"></path>
+								<path d="M12 9l0 6"></path>
+							</svg>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end p-2 p-xl-3 shadow rounded-4">
+							<li><a class="dropdown-item rounded-pill" href="#">New folder</a></li>
+							<li><a class="dropdown-item rounded-pill" href="#">File upload</a></li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li><a class="dropdown-item rounded-pill" href="#">New Reports</a></li>
+						</ul>
+					</li>
+					-->
+					<li class="pe-3 col-auto">
+						<div class="vr d-none d-sm-flex h-100 mx-sm-2"></div>
+					</li>
+					<li class="d-none d-xxl-inline-flex">
+						<button class="btn px-0 rightbar-toggle" type="button">
+							<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+								viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path
+									d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z">
+								</path>
+								<path d="M15 4v16"></path>
+								<path d="M9 10l2 2l-2 2"></path>
+							</svg>
+						</button>
+					</li>
+					<li class="d-inline-flex d-xxl-none">
+						<button class="btn border-0 p-0" type="button" data-bs-toggle="offcanvas"
+							data-bs-target="#offcanvas_rightbar">
+							<svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+								viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path
+									d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z">
+								</path>
+								<path d="M15 4v16"></path>
+								<path d="M9 10l2 2l-2 2"></path>
+							</svg>
+						</button>
+					</li>
+				</ul>
+
+			</div>
+
+			<!-- start: page body area -->
+			<%- body %>
+
+
+				<!-- start: page footer -->
+				<footer class="px-md-4 px-2">
+					<p class="mb-0 text-muted">©<a href="" target="_blank" title="CarUp">CarUp</a> - Federico Guzzo</p>
+				</footer>
+
+	</main>
+
+	<!-- start: template setting, and more. -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_setting" aria-labelledby="offcanvas_setting">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title">Ajustes del Template</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="offcanvas-body">
+			<div class="mb-4">
+				<h6>Color de Tema</h6>
+				<ul class="choose-skin list-unstyled mb-0">
+					<li data-theme="ValenciaRed">
+						<div style="--bvite-theme-color: #D63B38;"></div>
+					</li>
+					<li data-theme="SunOrange">
+						<div style="--bvite-theme-color: #F7A614;"></div>
+					</li>
+					<li data-theme="AppleGreen">
+						<div style="--bvite-theme-color: #5BC43A;"></div>
+					</li>
+					<li data-theme="CeruleanBlue">
+						<div style="--bvite-theme-color: #00B8D6;"></div>
+					</li>
+					<li data-theme="Mariner" class="active">
+						<div style="--bvite-theme-color: #0066FE;"></div>
+					</li>
+					<li data-theme="PurpleHeart">
+						<div style="--bvite-theme-color: #6238B3;"></div>
+					</li>
+					<li data-theme="FrenchRose">
+						<div style="--bvite-theme-color: #EB5393;"></div>
+					</li>
+				</ul>
+			</div>
+			<div class="svg-stroke mb-4">
+				<h6>Grosor de borde de Iconos</h6>
+				<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+					<input type="radio" class="btn-check" name="stroke" id="Stroke_A" value="svgstroke-a" checked>
+					<label class="btn btn-outline-primary" for="Stroke_A">Grosor 1</label>
+
+					<input type="radio" class="btn-check" name="stroke" id="Stroke_B" value="svgstroke-b">
+					<label class="btn btn-outline-primary" for="Stroke_B">Grosor 2</label>
+
+					<input type="radio" class="btn-check" name="stroke" id="Stroke_C" value="svgstroke-c">
+					<label class="btn btn-outline-primary" for="Stroke_C">Grosor 3</label>
+				</div>
+			</div>
+			<div class="mb-4">
+				<h6>Secciones del Layout - Ligh/Dark</h6>
+				<ul class="list-unstyled d-flex flex-wrap">
+					<li class="me-2 mb-2 border-toggle">
+						<input type="checkbox" class="btn-check" id="boder_layout" checked="">
+						<label class="btn btn-outline-primary" for="boder_layout">Layou Border</label>
+					</li>
+					<li class="me-2 mb-2 brand-toggle">
+						<input type="checkbox" class="btn-check" id="brand_dark">
+						<label class="btn btn-outline-primary" for="brand_dark">Brand</label>
+					</li>
+					<li class="me-2 mb-2 sidebar-toggle">
+						<input type="checkbox" class="btn-check" id="Sidebar_dark">
+						<label class="btn btn-outline-primary" for="Sidebar_dark">Sidebar</label>
+					</li>
+					<li class="me-2 mb-2 header-toggle">
+						<input type="checkbox" class="btn-check" id="Header_dark">
+						<label class="btn btn-outline-primary" for="Header_dark">Header</label>
+					</li>
+					<li class="me-2 mb-2 pheader-toggle">
+						<input type="checkbox" class="btn-check" id="pheader_dark">
+						<label class="btn btn-outline-primary" for="pheader_dark">breadcrumb</label>
+					</li>
+					<li class="me-2 mb-2 rightbar-toggle">
+						<input type="checkbox" class="btn-check" id="Rightbar_dark">
+						<label class="btn btn-outline-primary" for="Rightbar_dark">Rightbar</label>
+					</li>
+				</ul>
+			</div>
+			<div class="mb-4">
+				<h6>Más Ajustes de la Aplicación</h6>
+				<div class="form-check form-switch monochrome-toggle">
+					<input class="form-check-input fs-6" type="checkbox" role="switch" id="monochrome">
+					<label class="form-check-label" for="monochrome">Modo Monocromo</label>
+				</div>
+
+				<div class="form-check form-switch radius-toggle">
+					<input class="form-check-input fs-6" type="checkbox" role="switch" id="radius0">
+					<label class="form-check-label" for="radius0">Quitar Border Radius</label>
+				</div>
+				<div class="form-check form-switch svg-icon-color">
+					<input class="form-check-input fs-6" type="checkbox" role="switch" id="IconColor">
+					<label class="form-check-label" for="IconColor">Iconos coloridos en la barra principal</label>
+				</div>
+				<div class="form-check form-switch cb-shadow">
+					<input class="form-check-input fs-6" type="checkbox" role="switch" id="BoxShadow">
+					<label class="form-check-label" for="BoxShadow">Sombra en las Card Box</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Template page js -->
+	<script src="/js/libscripts.bundle.js"></script>
+	<script type="module" src="/js/main.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="/js/js-snackbar.min.js"></script>
+</body>
+
+</html>

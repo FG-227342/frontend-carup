@@ -1,0 +1,99 @@
+
+<!-- BORRAR ESTE ARCHIVO DESPUERS, no sirve pa na-->
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h1>CLIENTES</h1>
+            <button class="btn btn-danger" onclick="cargarPaises()">PAISES</button>
+            <button class="btn btn-warning" onclick="cargarCiudades()">CIUDADES</button>
+            <button class="btn btn-primary" onclick="cargarLocalidades()">LOCALIDADES</button>
+            <button class="btn btn-secondary" onclick="cargarZonas()">ZONAS</button>
+
+            <div class="row pt-3">
+                <div class="col-6">
+                    <select class="form-select" id="selectDatos"> </select>
+                </div>
+            </div>
+
+
+            <div id="datos"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#selectDatos").select2({ placeholder: 'Seleccione...' });
+    });
+
+
+
+    // acceder al value
+    //document.getElementById("selectDatos").value
+
+    async function cargarPaises() {
+        const response = await fetch("http://localhost:8080/api/localidades/paises");
+        const paises = await response.json();
+        console.log(paises);
+        //  $("#datos").text(JSON.stringify(paises));
+        //----------------------------------------------
+        document.getElementById("selectDatos").innerHTML = "";
+        paises.forEach(p => {
+            const select = document.getElementById("selectDatos");
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idPais;
+            select.add(option);
+        });
+        localStorage.setItem('paises', JSON.stringify(paises));
+
+    }
+
+    async function cargarCiudades() {
+        const response = await fetch("http://localhost:8080/api/localidades/ciudades");
+        const ciudades = await response.json();
+        console.log(ciudades);
+
+        //----------------------------------------------
+        document.getElementById("selectDatos").innerHTML = "";
+        ciudades.forEach(p => {
+            const select = document.getElementById("selectDatos");
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idCiudad;
+            select.add(option);
+        });
+
+    }
+
+    async function cargarLocalidades() {
+        const response = await fetch("http://localhost:8080/api/localidades/localidades");
+        const localidades = await response.json();
+        console.log(localidades);
+        document.getElementById("selectDatos").innerHTML = "";
+        localidades.forEach(p => {
+            const select = document.getElementById("selectDatos");
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idLocalidad;
+            select.add(option);
+        });
+
+    }
+
+    async function cargarZonas() {
+        const response = await fetch("http://localhost:8080/api/localidades/zonas");
+        const zonas = await response.json();
+        console.log(zonas);
+        //----------------------------------------------
+        document.getElementById("selectDatos").innerHTML = "";
+        zonas.forEach(p => {
+            const select = document.getElementById("selectDatos");
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idZona;
+            select.add(option);
+        });
+
+    }
+</script>

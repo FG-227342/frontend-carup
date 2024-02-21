@@ -1,0 +1,354 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Inicio de Turno</h4>
+
+            <div class="despacho" id="divChoferes">
+            </div>
+            <hr>
+            <br><br>
+            <div id='loader' style='padding: 20px;display: flex;flex-direction: column;align-items: center;'><div class='spinner-border' style='width: 3rem; height: 3rem;'></div><span>Cargando contenido...</span></div>
+            <div class="containerDrop" id="divMoviles">
+            </div>
+    
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    let GlobalChoferes;
+    let GlobalMoviles;
+
+    async function ejecutarTodo() {
+        try {
+            await fetchChoferes();
+            await fetchMoviles();
+
+            loadChoferes();
+            loadMoviles();
+            fetchTurnos();
+            document.getElementById("loader").style.display = "none";
+        } catch (e) { }
+    }
+    ejecutarTodo();
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchMoviles() {
+        const response = await fetch(urlBackend + "/moviles",{headers:{Authorization: 'Bearer '+token+''}});
+        const moviles = await response.json();
+        GlobalMoviles = moviles;
+    }
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchChoferes() {
+        const response = await fetch(urlBackend + "/choferes",{headers:{Authorization: 'Bearer '+token+''}});
+        const choferes = await response.json();
+        GlobalChoferes = choferes;
+    }
+
+    //--------------------------[Funciones del arrastable]------------------------------------------------
+    function dragstart(e) {
+        const dropZones = document.querySelectorAll('.dropzone');
+        console.log("inicio");
+        dropZones.forEach(dropzone => { dropzone.classList.add("highlight") });
+        // asigno clase is dragging a lo que fue arrastrado, this en este contexto es la img
+        this.classList.add('is-dragging');
+        // e.dataTransfer.setData("text", e.target.id);
+        e.dataTransfer.setData("idChofer", e.target.dataset.idaux);
+        e.dataTransfer.setData("nombreChofer", e.target.dataset.nombre);
+    }
+
+    function dragend() {
+        const dropZones = document.querySelectorAll('.dropzone');
+        console.log("fin")
+        dropZones.forEach(dropzone => { dropzone.classList.remove("highlight") });
+        // this es card en este contexto, el que inicio el evento
+        this.classList.remove('is-dragging');
+    }
+
+    //--------------------------[funciones de la dropzone]------------------------------------------------
+    function dragenter() {
+    }
+
+    function dragover(e) {
+        e.preventDefault();
+        // this es dropzone
+        this.classList.add("over");
+    }
+
+    function dragleave(e) {
+        // this es dropzone
+        this.classList.remove("over");
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        this.classList.remove("over");
+        // this aca es dropzone
+        // get data
+        let idChofer = e.dataTransfer.getData("idChofer");
+        let nomChofer = e.dataTransfer.getData("nombreChofer");
+        let idMovil = this.parentElement.dataset.idmovil;
+        let nombreMovil = this.parentElement.dataset.nombre;
+        console.log(idMovil + " :aca drop parent ID")
+        console.log(idChofer + " : esto es data transfer");
+        console.log(nomChofer + " : esto es data transfer");
+
+        // verifico que no tenga hijos y que no sea el div de reserva de los choferes
+        if (this.childElementCount == 0) {
+            // guardo el objeto que estoy arrastrando
+            const objDragging = document.querySelector('.is-dragging');
+
+            Swal.fire({
+                title: 'Está seguro?',
+                html: `Se asignará el móvil <b>${nombreMovil}</b> a <b>${nomChofer}</b>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, asignar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // this es el div droppable
+                    this.appendChild(objDragging);
+                    // paso a hacer la asignación en la api
+                    nuevoInicioTurno(idMovil, idChofer);
+                }
+            })
+        }
+    }
+
+    // Popular div choferes
+    function loadChoferes() {
+        const divChof = document.getElementById("divChoferes");
+
+        GlobalChoferes.forEach(c => {
+            // creo el div
+            const div = document.createElement("div");
+            const label = document.createElement("label");
+            label.textContent = c.nombre;
+            div.appendChild(label);
+            div.classList.add("obgDraggable");
+            div.setAttribute("draggable", "true");
+            div.setAttribute("data-idaux", c.idChofer);
+            div.setAttribute("data-nombre", c.nombre);
+            // Asigno los eventos de drag
+            div.addEventListener('dragstart', dragstart);
+            div.addEventListener('dragend', dragend);
+            divChof.appendChild(div);
+        });
+    }
+
+    // Popular div Moviles
+    function loadMoviles() {
+        //   var moviles = JSON.parse(localStorage.getItem("moviles"));
+        const divChof = document.getElementById("divMoviles");
+
+        GlobalMoviles.forEach(m => {
+
+            // creo el div
+            const div = document.createElement("div");
+            div.classList.add("bucket");
+            div.setAttribute("data-idmovil", m.idMovil);
+            div.setAttribute("data-nombre", m.nombre);
+            div.innerHTML += "<div class='headBucket'><h4>" + m.nombre + "</h4><span class='btnDesasignar'><i class='bi bi-trash-fill' style='color:grey'></i></span></div>";
+            div.appendChild(document.createElement("hr"));
+            const divImg = document.createElement("div");
+            divImg.classList.add("imgContainer");
+            const imagen = document.createElement("img");
+            if (m.esCamion) {
+                imagen.src = "/imgs/truck.png";
+            } else {
+                imagen.src = "/imgs/camioneta.png";
+            }
+            imagen.classList.add("img-fluid");
+            imagen.setAttribute("draggable", "true");
+            divImg.appendChild(imagen);
+            div.appendChild(divImg);
+            const divDropZone = document.createElement("div");
+            divDropZone.classList.add("targetZone");
+            divDropZone.classList.add("dropzone");
+            divDropZone.addEventListener('dragenter', dragenter);
+            divDropZone.addEventListener('dragover', dragover);
+            divDropZone.addEventListener('dragleave', dragleave);
+            divDropZone.addEventListener('drop', drop);
+            div.appendChild(divDropZone);
+            divChof.appendChild(div);
+
+            document.querySelectorAll(".btnDesasignar").forEach(btn => { btn.addEventListener('click', desasignarMovil) });
+        });
+    }
+
+    function desasignarMovil() {
+        const hijoDragable = this.parentElement.nextSibling.nextSibling.nextSibling.firstChild;
+        const divChof = document.getElementById("divChoferes");
+        if (hijoDragable) {
+            Swal.fire({
+                title: 'Esta seguro?',
+                text: "Se desasignará el Móvil!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, desasignar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    divChof.appendChild(hijoDragable);
+                    // Borro desde la api en la bd
+                    // this es el span con el boton
+                    const idMovilBorrar = this.parentElement.parentElement.dataset.idmovil;
+                    nuevoInicioTurno(idMovilBorrar, null);
+                }
+            });
+        }
+    }
+
+    // Alta de turnos
+    async function nuevoInicioTurno(idMovil, idChofer) {
+        fetch(urlBackend + "/turnos",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+token+''
+                },
+                method: "POST",
+                body: JSON.stringify({ idMovil: idMovil, idChofer: idChofer })
+            })
+            .then(function (res) {
+
+            })
+            .catch(function (res) {
+            })
+    }
+
+
+    async function fetchTurnos() {
+        const response = await fetch(urlBackend + "/turnos",{headers:{Authorization: 'Bearer '+token+''}});
+        const turnos = await response.json();
+
+        //Asigno visualmente los choferes a los móviles
+        turnos.forEach(t => {
+            if (t.idChofer != null) {
+                asignarVisualmenteMovil(t.idMovil, t.idChofer);
+            }
+        });
+    }
+
+
+    // posiciona visualmente el elemento chofer en la dropzone correspondiente del móvil
+    function asignarVisualmenteMovil(idMovil, idChofer) {
+        const movil = document.querySelector('[data-idmovil="' + idMovil + '"]');
+        const aux = document.querySelector('[data-idaux="' + idChofer + '"]');
+        const zonaDrop = movil.querySelector(".dropzone");
+        zonaDrop.appendChild(aux);
+    }
+
+
+/*
+    // tabla dtos - despues borrar
+    async function fetchDTO() {
+        const response = await fetch(urlBackend + "/turnos/dto",{headers:{Authorization: 'Bearer '+token+''}});
+        const turnos = await response.json();
+        console.log(turnos);
+    }
+    fetchDTO();
+*/
+</script>
+
+<style>
+    .bucket {
+        width: 205px;
+        text-align: center;
+        border: 2px solid grey;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .bucket>img {
+        padding: 14px;
+    }
+
+    .despacho {
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 20px
+    }
+
+    .containerDrop {
+        gap: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .highlight {
+        background-color: #c20f2f !important;
+    }
+
+    /*suavizar animaciones de aparecer y desaparecer*/
+
+    .imgs {
+        transition: 200ms;
+    }
+
+    .is-dragging {
+        cursor: move;
+    }
+
+    .over {
+        background: grey !important;
+        min-height: 80px !important;
+    }
+
+    /*----------------------------------------------------*/
+
+    .targetZone {
+        min-height: 40px;
+        padding: 10px;
+        height: fit-content;
+        /* border: 1px solid red;*/
+        background-color: #323232;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+
+    }
+
+    /*----------------------------------*/
+    .obgDraggable {
+        border-radius: 5px;
+        padding: 2px 15px;
+        text-align: center;
+        width: 240px;
+        border: 2px solid black;
+        background-color: whitesmoke;
+        box-shadow: 2px 2px 2px 1px #888888;
+        height: fit-content;
+        font-size: 15px;
+    }
+
+    hr {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+
+    .imgContainer {
+        padding: 10px;
+        min-height: 120px;
+    }
+
+    .headBucket {
+        padding: 4px 2px;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 8px;
+        cursor: pointer;
+    }
+</style>

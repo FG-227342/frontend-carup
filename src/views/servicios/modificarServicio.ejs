@@ -1,0 +1,1036 @@
+<div class="ps-md-4 pe-md-3 px-2 page-body">
+    <div class="card" id="contenedorBusqueda">
+        <div class="card-body">
+            <h4>Búsqueda de Servicio</h4>
+            <div class="col-10 offset-1">
+                <div class="row g-3 my-3">
+                    <div class="col-md-4">
+                        <label for="txtIdTarea" class="form-label">ID TAREA</label>
+                        <input id="txtIdTarea" type="text" placeholder="Ingrese el N° de tarea" class="form-control"
+                            oninput="this.value = this.value.replace(/\D/g, '');" maxlength="4">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtFechaBusqueda" class="form-label">FECHA</label>
+                        <input type="date" id="txtFechaBusqueda" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-primary"
+                            style="float:right; margin:10px;float:left;    margin-top: 31px;"
+                            onclick="buscarServicio()">
+                            <i class="bi bi-search"></i> Buscar Servicio
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div id="contenedorServicio" style="display: none;">
+
+        <div class="row sticky-div" style="z-index: 9;">
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-3">
+
+                            <img class="avatar lg rounded-circle imgAvt" src="/imgs/profile_av.png" alt="avatar">
+                        </div>
+                        <div class="col-8">
+
+                            <b><label id="lblNombreCliente">@</label></b>
+                            <br>
+                            <b><label>ID: <span id="lblIdCliente"></span></label></b>
+                            <br>
+                            <b><label id="lblTipoCliente"></label></b>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="SpanPlan" id="infoServicio" style="float:left"></div>
+                    <div class="SpanEstado" id="infoEstado" style="float:left"></div>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
+                        style="float: right;">
+                        <i class="bi bi-caret-down-square"></i>
+                    </button>
+                </div>
+
+
+                <div class="collapse" id="collapseExample">
+                    <br>
+                    <div class="card card-body bg-body">
+                        <label for="">Dirección: <span id="lblDireccion"></span></label>
+                        <label for="">Localidad: <span id=""></span></label>
+                        <label for="">Teléfono: <span id="lblTelefono"></span></label>
+                        <label for="">Celular: <span id="lblCelular"></span></label>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <br> <br>
+        <form id="formsServicio">
+
+            <h5>Datos del vehículo</h5>
+            <section id="divDatosVehiculo" class="form-group row">
+                <label for="" class="col-sm-12 col-form-label floatInput">ID: <span id="dlbIdVeh"></span></label>
+                <label class="col-sm-2 col-form-label floatInput">Matrícula:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="dlbMatricula" type="text" placeholder="Matrícula" class="form-control" maxlength="7"
+                        disabled>
+                </div>
+                <label class="col-sm-2 col-form-label floatInput">Marca:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="dlbMarca" disabled>
+                    </select>
+                </div>
+                <label class="col-sm-2 col-form-label floatInput">Modelo:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="dlbModelo" type="text" placeholder="Modelo" class="form-control" disabled>
+                </div>
+                <label for="txtColor" class="col-sm-2 col-form-label floatInput">Color:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="dlbColor" type="text" placeholder="Color" class="form-control" disabled>
+                    <br>
+                </div>
+                <div style="display: flex; justify-content: space-around;">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio" checked disabled>Auto/Camioneta
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio" disabled>Minibus
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio" disabled>Moto
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12" style="text-align: center;padding-top: 25px;">
+
+                        <button type="button" id="btnHabilitarVehiculo" onclick="editarVehiculo()"
+                            class="btn btn-secondary"><i class="fa fa-edit"
+                                style="margin-right: 5px;"></i></i>Editar</button>
+
+                        <button type="button" class="btn btn-dark" id="btnSaveVeh" onclick="actualizarVehiculo()"
+                            style=" margin:10px; display:none">
+                            <i class="fa fa-car"></i> Guardar vehículo
+                        </button>
+
+                        <button type="button" class="btn btn-secondary" id="btnCancelarVeh" onclick="cancelarSaveVeh()"
+                            style=" margin:10px; display:none">
+                            <i class="fa fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <h5>Datos del solicitante</h5>
+            <section id="divDatosSolicitante" class="form-group row">
+                <label for="txtNomPila" class="col-sm-1 col-form-label floatInput">Nombre:</label>
+                <div class="col-sm-5 floatInput">
+                    <input id="txtNomPila" type="text" placeholder="Quién se comunica?" class="form-control">
+                </div>
+                <label for="txtCelular" class="col-sm-1 col-form-label floatInput">Celular:</label>
+                <div class="col-sm-5 floatInput">
+                    <input id="txtCelular" type="text" placeholder="Ingrese el celular" class="form-control"
+                        oninput="this.value = this.value.replace(/\D/g, '');" maxlength="12" required>
+                </div>
+            </section>
+
+            <h5>Ubicación</h5>
+            <section id="divDatosUbicacion" class="form-group row">
+
+                <label for="slcPais" class="col-sm-2 col-form-label floatInput">País:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcPais" required>
+                    </select>
+                </div>
+                <label for="slcCiudad" class="col-sm-2 col-form-label floatInput">Departamento:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcCiudad" required>
+                    </select>
+                </div>
+                <label for="slcLocalidad" class="col-sm-2 col-form-label floatInput">Localidad:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcLocalidad" required>
+                    </select>
+                </div>
+
+                <label for="slcZona" class="col-sm-2 col-form-label floatInput">Zona:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcZona">
+                    </select>
+                </div>
+                <label for="txtCalle" class="col-sm-2 col-form-label floatInput">Calle o ruta:</label>
+                <div class="col-sm-10 floatInput">
+                    <input id="txtCalle" type="text" placeholder="Ingrese la calle o ruta donde se encuentra"
+                        class="form-control" maxlength="100" required>
+                </div>
+                <label for="txtNumPuerta" class="col-sm-2 col-form-label floatInput">N°puerta/Km:</label>
+                <div class="col-sm-2 floatInput">
+                    <input id="txtNumPuerta" type="text" placeholder="N° puerta" class="form-control">
+                </div>
+                <label for="txtEsquina" class="col-sm-2 col-form-label floatInput">Esquina:</label>
+                <div class="col-sm-6 floatInput">
+                    <input id="txtEsquina" type="text" placeholder="Ingrese la esquina" class="form-control">
+                </div>
+
+
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-6">
+                        <div id="map"></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="col-12">
+                            <fieldset class="form-check"
+                                style="width: 300px; border:1px solid grey; padding: 10px; margin: 2px;margin-top: 20px;">
+                                <legend>
+                                    Es garage?<span style="float: right;font-size: 20px;cursor: pointer;">
+                                        <i class="bi bi-x-circle" onclick="borrarInputGarage()" title="Borrar"></i>
+                                    </span>
+                                </legend>
+                                <div class="form-check col-sm-3">
+                                    <label class="form-check-label col-sm-2">
+                                        <input type="radio" class="form-check-input btnGarage" name="optradio">Subsuelo
+                                    </label>
+                                </div>
+                                <div class="form-check col-sm-3">
+                                    <label class="form-check-label col-sm-2">
+                                        <input type="radio" class="form-check-input btnGarage" name="optradio">Nivel
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-12">
+                            <div style="display: flex;flex-wrap: wrap; gap:20px">
+                                <div style="min-width: 500px;">
+                                    <label for="">Latitud:</label>
+                                    <input type="text" class="form-control" id="txtLatitud"
+                                        oninput="this.value = this.value.replace(/[^\d.-]+/g, '');">
+                                </div>
+                                <div style="min-width: 500px;">
+                                    <label for="">Longitud:</label>
+                                    <input type="text" class="form-control" id="txtLongitud"
+                                        oninput="this.value = this.value.replace(/[^\d.-]+/g, '');">
+                                </div>
+                            </div>
+                            <div style="margin-top: 30px;">
+                                <button type="button" class="btn btn-primary" onclick="posicionarMapa()"><i
+                                        class="fa fa-search"></i>
+                                    Posicionar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <h5>Falla</h5>
+            <section id="divDatosFalla" class="form-group row">
+                <label for="" class="col-sm-1 col-form-label floatInput">Falla:</label>
+                <div class="col-sm-5 floatInput">
+                    <select class="form-control" id="slcFalla" required>
+                    </select>
+                </div>
+                <div class="form-check form-switch col-6" style="padding: 15px;">
+                    <input class="form-check-input" type="checkbox" id="checkEsConcesionario"
+                        style="transform: scale(1.2); margin-left: 10px;">
+                    <label class="form-check-label" for="checkEsCamion" style="margin-left: 10px;">Es Siniestro?</label>
+                </div>
+
+            </section>
+
+            <h5>Detalles del Traslado</h5>
+            <section id="divDatosTraslado" class="form-group row">
+
+                <label for="slcPaisDestino" class="col-sm-1 col-form-label floatInput">País:</label>
+                <div class="col-sm-2 floatInput">
+                    <select class="form-control" id="slcPaisDestino">
+                        <option value="" default>Seleccione...</option>
+                    </select>
+                </div>
+                <label for="slcCiudadDestino" class="col-sm-1 col-form-label floatInput">Depto:</label>
+                <div class="col-sm-3 floatInput">
+                    <select class="form-control" id="slcCiudadDestino">
+                        <option value="" default>Seleccione...</option>
+                    </select>
+                </div>
+                <label for="slcLocalidadDestino" class="col-sm-1 col-form-label floatInput">Localidad:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcLocalidadDestino">
+                        <option value="" default>Seleccione...</option>
+                    </select>
+                </div>
+                <label for="" class="col-sm-1 col-form-label floatInput">Dirección:</label>
+                <div class="col-sm-11 floatInput">
+                    <input id="txtCalleDest" type="text" placeholder="Ingrese la calle o ruta de destino"
+                        class="form-control" maxlength="100">
+                </div>
+                <hr>
+                <h6>Viaja sólo?</h6>
+                <label for="txtNomPila" class="col-sm-1 col-form-label floatInput">Recibe:</label>
+                <div class="col-sm-5 floatInput">
+                    <input id="txtNomPila" type="text" placeholder="Nombre" class="form-control">
+                </div>
+                <label for="txtCelular" class="col-sm-1 col-form-label floatInput">Celular:</label>
+                <div class="col-sm-5 floatInput">
+                    <input id="txtCelular" type="text" placeholder="Ingrese un celular" class="form-control"
+                        oninput="this.value = this.value.replace(/\D/g, '');" maxlength="12">
+                </div>
+            </section>
+
+            <h5>Observaciones</h5>
+            <section id="" class="form-group row">
+                <label for="" class="col-form-label">Observaciones del servicio:</label>
+                <div class="col-sm-12 floatInput">
+                    <textarea id="txtObs" placeholder="Obs..." class="form-control" rows="6"></textarea>
+                </div>
+            </section>
+            <section id="" class="form-group row">
+                <div class="col-sm-12 floatInput text-center">
+                    <input class="btn btn-primary" id="btnGuardarSrv" type="submit" value="ACTUALIZAR">
+                </div>
+            </section>
+        </form>
+        <ul id="menuRight-sidebar">
+            <li>
+                <a class="entypo-item2"><i class="fa fa-car"></i><span>Asignar</span></a>
+            </li>
+            <li>
+                <a class="entypo-item2" onclick="cambiarEstado('C')"><i
+                        class="bi bi-x-circle"></i><span>Cancelar</span></a>
+            </li>
+            <li>
+                <a class="entypo-item1" onclick="cambiarEstado('F')"><i
+                        class="bi bi-check-circle"></i><span>Finalizar</span></a>
+            </li>
+            <li>
+                <a class="entypo-item3" onclick="cambiarEstado('P')"><i
+                        class="bi bi-arrow-clockwise"></i><span>Desasignar</span></a>
+            </li>
+            <li>
+                <a class="entypo-item4" onclick="guardarServicio()"><svg style="fill: white;"
+                        xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+                        <path
+                            d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z" />
+                    </svg><span>Guardar</span></a>
+            </li>
+        </ul>
+
+
+    </div><!--contenedorServicio-->
+
+</div>
+
+
+<script>
+
+    const dataModificar = JSON.parse('<%- dataSrv %>');
+    console.log(dataModificar)
+
+    if (dataModificar.length != 0) {
+        $("#contenedorBusqueda").hide();
+        $("#contenedorServicio").show();
+        document.getElementById("txtIdTarea").value = dataModificar.tareaBuscada;
+        var dateParts = dataModificar.fechaBuscada.split("/");
+        var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+
+        document.getElementById("txtFechaBusqueda").valueAsDate = dateObject;
+        buscarServicio();
+    } else {
+        document.getElementById("txtFechaBusqueda").valueAsDate = new Date();
+    }
+
+
+
+
+    $("#formsServicio").on('submit', function (evt) {
+        evt.preventDefault();
+        guardarServicio();
+    });
+
+
+    let Cliente;
+    let Servicio;
+    // Obtener Cliente
+    async function obtenerDatosCliente(idCliente) {
+
+        const response = await fetch(urlBackend + "/clientes/" + idCliente, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => { console.log("Error al obtener datos del cliente") });
+
+        if (response.ok) {
+            Cliente = await response.json();
+        }
+    }
+
+
+
+    //  Obtener VEHICULO
+    async function obtenerVehiculo(idBuscado) {
+        // desactivo los inputs si entran nuevamente a la ventana sin recargar
+        cancelarSaveVeh();
+        const response = await fetch(urlBackend + "/vehiculos/" + idBuscado, { headers: { Authorization: 'Bearer ' + token + '' } });
+        const veh = await response.json();
+        return veh;
+    }
+
+    function editarVehiculo() {
+        document.getElementById("btnSaveVeh").style.display = "inline-block";
+        document.getElementById("btnCancelarVeh").style.display = "inline-block";
+        document.getElementById("btnHabilitarVehiculo").style.display = "none";
+        document.getElementById("dlbMatricula").disabled = false;
+        document.getElementById("dlbModelo").disabled = false;
+        document.getElementById("dlbColor").disabled = false;
+        document.getElementById("dlbMarca").disabled = false;
+    }
+
+    function actualizarVehiculo() {
+        cancelarSaveVeh();
+
+        const actualizarMatricula = document.getElementById("dlbMatricula").value;
+        const actualizarModelo = document.getElementById("dlbModelo").value;
+        const actualizarColor = document.getElementById("dlbColor").value;
+        const actualizarMarca = document.getElementById("dlbMarca").value;
+        const actualizarId = parseInt(document.getElementById("dlbIdVeh").innerText);
+
+        const vehiculo = {
+            "idMarca": parseInt(actualizarMarca),
+            "matricula": actualizarMatricula,
+            "modelo": actualizarModelo,
+            "color": actualizarColor
+        }
+
+        fetch(urlBackend + "/vehiculos/" + actualizarId,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + ''
+                },
+                method: "PUT",
+                body: JSON.stringify(vehiculo)
+            }).then(response => {
+                if (!response.ok) {
+                    response.text().then(text => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al actualizar!',
+                            text: text,
+                            showConfirmButton: true,
+                        });
+                    })
+                }
+                return response.json();
+            }).then(data => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Vehículo [' + data.idVehiculo + '] actualizado!',
+                    showConfirmButton: true,
+                    timer: 2500
+                });
+
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Parece que no hay conexión con la base de datos!',
+                    text: error,
+                    showConfirmButton: true,
+                });
+            }
+            );
+    }
+
+    function cancelarSaveVeh() {
+        document.getElementById("btnHabilitarVehiculo").style.display = "inline-block";
+        document.getElementById("btnSaveVeh").style.display = "none";
+        document.getElementById("btnCancelarVeh").style.display = "none";
+        document.getElementById("dlbMatricula").disabled = true;
+        document.getElementById("dlbModelo").disabled = true;
+        document.getElementById("dlbColor").disabled = true;
+        document.getElementById("dlbMarca").disabled = true;
+    }
+
+
+    // invertir String fecha
+    function convertDateFormat(string) {
+        var info = string.split('-');
+        return info[2] + '/' + info[1] + '/' + info[0];
+    }
+
+    async function pintarDatos(srv) {
+        await obtenerDatosCliente(srv.clienteId);
+
+        const vehiculo = await obtenerVehiculo(srv.idVehiculo);
+
+        const tiposCliente = JSON.parse(localStorage.getItem("tipoCliente"));
+        const tipoCliente = tiposCliente.find(c => c.idTipo == Cliente.idTipoCliente);
+
+        document.getElementById("lblTipoCliente").innerText = tipoCliente.nombre;
+        // VEHICULO
+        document.getElementById("dlbMatricula").value = vehiculo.matricula;
+        document.getElementById("dlbModelo").value = vehiculo.modelo;
+        document.getElementById("dlbColor").value = vehiculo.color;
+        document.getElementById("dlbMarca").value = parseInt(vehiculo.idMarca);
+        document.getElementById("dlbIdVeh").innerText = vehiculo.idVehiculo;
+        // DATOS SERVICIO
+        document.getElementById("slcPais").value = srv.paisOrigen;
+        document.getElementById("slcCiudad").value = srv.ciudadOrigen;
+        document.getElementById("slcLocalidad").value = srv.locOrigen;
+        document.getElementById("slcZona").value = srv.zona;
+        document.getElementById("txtCalle").value = srv.calleOrigen;
+        document.getElementById("txtNumPuerta").value = srv.numPuertaOrigen;
+        document.getElementById("txtEsquina").value = srv.esquinaOrigen;
+        document.getElementById("txtLatitud").value = srv.latitud;
+        document.getElementById("txtLongitud").value = srv.longitud;
+        paisDestino = document.getElementById("slcPaisDestino").value = 1;
+        document.getElementById("slcCiudadDestino").value = srv.ciudadDestino;
+        document.getElementById("slcLocalidadDestino").value = srv.locDestino;
+        document.getElementById("txtCalleDest").value = srv.calleDestino;
+        document.getElementById("slcFalla").value = srv.idFalla;
+        document.getElementById("txtNomPila").value = srv.solicitante;
+        document.getElementById("txtCelular").value = srv.celSolicitante;
+        document.getElementById("txtObs").value = srv.observaciones;
+
+        document.getElementById("infoServicio").innerText = "Tarea N° " + srv.idTarea + " - " + convertDateFormat(srv.fecha);
+        posicionarMapa();
+        document.getElementById("lblNombreCliente").innerText = "@" + Cliente.nombre;
+        document.getElementById("lblIdCliente").innerText = Cliente.idCliente;
+        document.getElementById("lblDireccion").innerText = Cliente.direccion;
+        document.getElementById("lblTelefono").innerText = Cliente.telefono;
+        document.getElementById("lblCelular").innerText = Cliente.celular;
+
+        const estado = srv.estado;
+
+        switch (estado) {
+            case "A":
+                document.getElementById("infoEstado").innerText = "ASIGNADO";
+                break;
+            case "X":
+                document.getElementById("infoEstado").innerText = "ACEPTADO";
+                break;
+            case "R":
+                document.getElementById("infoEstado").innerText = "RECHAZADO";
+                break;
+            case "C":
+                document.getElementById("infoEstado").innerText = "CANCELADO";
+                break;
+            case "F":
+                document.getElementById("infoEstado").innerText = "FINALIZADO";
+                break;
+            case "T":
+                document.getElementById("infoEstado").innerText = "TERMINADO";
+                break;
+            default:
+                document.getElementById("infoEstado").innerText = "PENDIENTE";
+        }
+    }
+
+
+
+    function buscarServicio() {
+        const idTarea = document.getElementById("txtIdTarea").value;
+        const fechaSrvBuscado = document.getElementById("txtFechaBusqueda").value;
+
+        document.getElementById("txtIdTarea").value = "";
+
+        if (idTarea == "") {
+            SnackBar({
+                message: "Debe ingresar un id Tarea...",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+            const bodyData = {
+                "idTarea": idTarea,
+                "fecha": fechaSrvBuscado
+            }
+
+            fetch(urlBackend + "/servicios/buscarPorTarea",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "POST",
+                    body: JSON.stringify(bodyData)
+                }).then(response => {
+                    if (response.status == 204) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No se encontró el servicio',
+                            showConfirmButton: true,
+                        });
+                    }
+                    return response.json();
+                }).then(data => {
+                    console.log("Servicio obtenido: ", data);
+                    Servicio = data;
+                    $("#contenedorServicio").show();
+
+                    pintarDatos(data);
+                    // corregir render mapa
+                    setTimeout(function () {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 200);
+                })
+                .catch(error => {
+
+                });
+        }
+    }
+
+    function borrarInputGarage() {
+        document.getElementsByClassName("btnGarage")[0].checked = false;
+        document.getElementsByClassName("btnGarage")[1].checked = false;
+    }
+
+    function posicionarMapa() {
+        let latitud = document.getElementById("txtLatitud").value;
+        let longitud = document.getElementById("txtLongitud").value;
+        if (latitud == "" || longitud == "") {
+            SnackBar({
+                message: "Debe ingresar Latitud y Longitud",
+                status: "warning",
+                timeout: 2500,
+                position: "tc",
+            });
+        } else {
+            positionMap(latitud, longitud);
+        }
+    }
+
+    // popular datos en los select
+    function cargarDatosSelect() {
+        const inputPais = document.getElementById("slcPais");
+        const inputCiudad = document.getElementById("slcCiudad");
+        const inputLocalidad = document.getElementById("slcLocalidad");
+        const inputZona = document.getElementById("slcZona");
+        const inputPaisDestino = document.getElementById("slcPaisDestino");
+        const inputCiudadDestino = document.getElementById("slcCiudadDestino");
+        const inputLocalidadDestino = document.getElementById("slcLocalidadDestino");
+        const inputMarcas = document.getElementById("dlbMarca");
+
+        const paises = JSON.parse(localStorage.getItem("paises"));
+        const ciudades = JSON.parse(localStorage.getItem("ciudades"));
+        const localidades = JSON.parse(localStorage.getItem("localidades"));
+        const zonas = JSON.parse(localStorage.getItem("zonas"));
+        const marcas = JSON.parse(localStorage.getItem("marcas"));
+
+        paises.forEach(p => {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            option1.text = p.nombre;
+            option1.value = p.idPais;
+            option2.text = p.nombre;
+            option2.value = p.idPais;
+            inputPais.add(option1);
+            inputPaisDestino.add(option2);
+        });
+
+        ciudades.forEach(p => {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            option1.text = p.nombre;
+            option1.value = p.idCiudad;
+            option2.text = p.nombre;
+            option2.value = p.idCiudad;
+            inputCiudad.add(option1);
+            inputCiudadDestino.add(option2);
+        });
+
+        localidades.forEach(p => {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            option1.text = p.nombre;
+            option1.value = p.idLocalidad;
+            option2.text = p.nombre;
+            option2.value = p.idLocalidad;
+            inputLocalidad.add(option1);
+            inputLocalidadDestino.add(option2);
+        });
+
+        zonas.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idZona;
+            inputZona.add(option);
+        });
+
+        const slcFalla = document.getElementById("slcFalla");
+        const fallas = JSON.parse(localStorage.getItem("fallas"));
+
+        fallas.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idFalla;
+            slcFalla.add(option);
+        });
+
+        marcas.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idMarca;
+            inputMarcas.add(option);
+
+        });
+    }
+    cargarDatosSelect();
+
+    function guardarServicio() {
+
+        // const idVehiculo = idVehiculoGlobal;
+        Servicio.paisOrigen = document.getElementById("slcPais").value;
+        Servicio.ciudadOrigen = document.getElementById("slcCiudad").value;
+        Servicio.locOrigen = document.getElementById("slcLocalidad").value;
+        Servicio.zona = document.getElementById("slcZona").value;
+        Servicio.calleOrigen = document.getElementById("txtCalle").value;
+        Servicio.numPuerta = document.getElementById("txtNumPuerta").value;
+        Servicio.esquinaOrigen = document.getElementById("txtEsquina").value;
+        Servicio.lat = document.getElementById("txtLatitud").value;
+        Servicio.long = document.getElementById("txtLongitud").value;
+        //Servicio.paisDestino = document.getElementById("slcPaisDestino").value = 1;
+        Servicio.ciudadDestino = document.getElementById("slcCiudadDestino").value;
+        Servicio.locDestino = document.getElementById("slcLocalidadDestino").value;
+        Servicio.calleDestino = document.getElementById("txtCalleDest").value;
+        Servicio.falla = document.getElementById("slcFalla").value;
+        Servicio.solicitante = document.getElementById("txtNomPila").value;
+        Servicio.celSolicitante = document.getElementById("txtCelular").value;
+        Servicio.observaciones = document.getElementById("txtObs").value;
+
+        fetch(urlBackend + "/servicios/" + Servicio.idSrv,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + ''
+                },
+                method: "PUT",
+                body: JSON.stringify(Servicio)
+            }).then(response => {
+                if (!response.ok) {
+                    response.text().then(text => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al modificar!',
+                            text: text,
+                            showConfirmButton: true,
+                        });
+                    })
+                } else {
+
+
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Se modificó la Tarea ' + Servicio.idTarea,
+                        text: '#' + Servicio.idSrv,
+                        showConfirmButton: true
+                    });
+
+                }
+                return response.json();
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Parece que no hay conexión con la base de datos!',
+                    text: error,
+                    showConfirmButton: true,
+                });
+            });
+    }
+
+    function cambiarEstado(estado) {
+
+        if (Servicio.idSrv != null) {
+
+            const bodyData = {
+                "estado": estado
+            }
+
+            fetch(urlBackend + "/servicios/" + Servicio.idSrv,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "PATCH",
+                    body: JSON.stringify(bodyData)
+                }).then(response => {
+                    if (!response.ok) {
+                        response.text().then(text => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hubo un error al cambiar el estado del servicio!',
+                                text: text,
+                                showConfirmButton: true,
+                            });
+                        })
+                    } else {
+                        let textoEstado;
+                        switch (estado) {
+                            case "C":
+                                document.getElementById("infoEstado").innerText = "CANCELADO";
+                                textoEstado = "El servicio se CANCELÓ";
+                                break;
+                            case "F":
+                                document.getElementById("infoEstado").innerText = "FINALIZADO";
+                                textoEstado = "El servicio se FINALIZÓ";
+                                break;
+                            default:
+                                document.getElementById("infoEstado").innerText = "PENDIENTE";
+                                textoEstado = "El servicio se pasó a PENDIENTE";
+                        }
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: textoEstado,
+                            showConfirmButton: true,
+                            timer: 1500
+                        });
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        text: error,
+                        showConfirmButton: true,
+                    });
+                }
+                );
+        }
+    }
+
+</script>
+
+<!-- SCRIPTS DEL MAPA -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    var map = L.map("map").setView([-34.869814461669435, -56.16796487515673], 12);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+    function positionMap(latitude, longitude) {
+        map.eachLayer((layer) => {
+            if (layer['_latlng'] != undefined)
+                layer.remove();
+        });
+        map.setView([latitude, longitude], 16);
+        L.marker([latitude, longitude]).addTo(map);
+
+    }
+</script>
+
+<style>
+    .sticky-div {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        padding: 20px;
+        border-radius: 0 0 20px 20px;
+        border: 2px solid grey;
+        background: rgb(0, 184, 214);
+        background: linear-gradient(100deg, rgba(0, 184, 214, 1) 80px, rgba(255, 255, 255, 1) 80px);
+    }
+
+    .imgAvt {
+        background-color: white;
+        position: relative;
+        left: 20px;
+        border: 2px solid grey;
+    }
+
+
+    fieldset {
+        border-radius: 10px;
+    }
+
+    .cmn-divfloat {
+        position: fixed !important;
+        bottom: 45px;
+        right: 45px;
+        display: none;
+    }
+
+    .cmn-btncircle {
+        width: 40px !important;
+        height: 40px !important;
+        padding: 6px 0px;
+        border-radius: 15px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    section {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: white;
+        border-bottom: 3px solid grey;
+        margin: 15px 0px;
+    }
+
+    .floatInput {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .seccionPoliza {
+        padding: 10px;
+    }
+
+    .SpanPlan {
+        margin-left: 40px;
+        font-size: 25px;
+        float: right;
+        font-weight: bolder;
+        color: red;
+    }
+
+    .SpanEstado {
+        margin-left: 40px;
+        font-size: 25px;
+        float: right;
+        font-weight: bolder;
+        color: #1b65b9;
+    }
+
+    .search {
+        background-color: #1b65b9 !important;
+    }
+
+    .search:hover {
+        background-color: black !important;
+    }
+
+    .logoBSE {
+        width: 30%;
+        margin: 30px;
+    }
+
+    #map {
+        width: 90%;
+        height: 400px;
+        z-index: 1;
+        margin: 0 auto;
+        border-radius: 10px;
+
+    }
+
+    /*MENU LATERAL*/
+    #menuRight-sidebar {
+        right: 0;
+        position: fixed;
+        top: 40%;
+        list-style: none;
+        z-index: 9;
+    }
+
+    .menuFloatRight {
+        right: 380px !important;
+    }
+
+    #menuRight-sidebar li:first-child a {
+        border-top-left-radius: 5px;
+    }
+
+    #menuRight-sidebar li:last-child a {
+        border-bottom-left-radius: 5px;
+    }
+
+    #menuRight-sidebar a {
+        background: rgba(0, 0, 0, .9);
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        height: 50px;
+        width: 40px;
+        font-size: 24px;
+        line-height: 50px;
+        position: relative;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    #menuRight-sidebar a:hover span {
+        left: -290%;
+        opacity: 1;
+    }
+
+    #menuRight-sidebar a span {
+        font: 12px "Open Sans", sans-serif;
+        text-transform: uppercase;
+        border-radius: 3px;
+        line-height: 24px;
+        left: 10%;
+        margin-top: -16px;
+        opacity: 0;
+        padding: 4px 8px;
+        position: absolute;
+        transition: opacity .3s, left .4s;
+        top: 50%;
+        z-index: -1;
+        min-width: 100px;
+    }
+
+    #menuRight-sidebar a span:before {
+        content: "";
+        display: block;
+        height: 8px;
+        width: 8px;
+        right: -4px;
+        margin-top: -4px;
+        position: absolute;
+        top: 50%;
+        transform: rotate(45deg);
+    }
+
+    #menuRight-sidebar a[class*="item1"]:hover,
+    #menuRight-sidebar a[class*="item1"] span,
+    #menuRight-sidebar a[class*="item1"] span:before {
+        background: #23790d;
+    }
+
+    #menuRight-sidebar a[class*="item2"]:hover,
+    #menuRight-sidebar a[class*="item2"] span,
+    #menuRight-sidebar a[class*="item2"] span:before {
+        background: #E34429;
+    }
+
+    #menuRight-sidebar a[class*="item3"]:hover,
+    #menuRight-sidebar a[class*="item3"] span,
+    #menuRight-sidebar a[class*="item3"] span:before {
+        background: #d0dd1f;
+    }
+
+    #menuRight-sidebar a[class*="item4"]:hover,
+    #menuRight-sidebar a[class*="item4"] span,
+    #menuRight-sidebar a[class*="item4"] span:before {
+        background: #574cea;
+    }
+</style>

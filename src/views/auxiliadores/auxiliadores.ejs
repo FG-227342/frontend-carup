@@ -1,0 +1,263 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Auxiliadores</h4>
+            <div class="col-10 offset-1">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="crearNuevo()"
+                        style="float:right; margin:10px">
+                        <i class="bi bi-plus-circle"></i> Nuevo Auxiliador
+                    </button>
+                </div>
+                <table class="table table-striped table-bordered text-center" id="tabChoferes" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#Id</th>
+                            <th>Nombre</th>
+                            <th>Celular</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalCrearAux" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="hideDIV">
+                                    <label class="form-label">ID:</label>
+                                    <label class="form-label" id="modalIdMovil"></label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="modalNombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="modalNombre"
+                                    placeholder="Ingrese el nombre..." style="text-transform:uppercase" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="modalCelular" class="form-label">Celular</label>
+                                <input type="text" class="form-control" id="modalCelular" inputmode="numeric"
+                                    placeholder="Ingrese el celular..." style="text-transform:uppercase" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveModal"><span
+                        class="spinner-border spinner-border-sm"
+                        style="margin-right: 5px;display:none;"></span>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Carga inicial de datos
+    fetchAuxiliadores();
+
+    // Asignación de inputs
+    const inputNombre = document.getElementById('modalNombre');
+    const inputCelular = document.getElementById('modalCelular');
+
+    let auxiliadores;
+
+    // Inicializo la tabla
+    const table = $('#tabChoferes').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        scrollY: '900px',
+        paging: false,
+        data: auxiliadores,
+        columns: [
+            { data: 'idChofer' },
+            { data: 'nombre' },
+            { data: 'celular' },
+            {
+                data: null,
+                render: function (item) {
+                    return `
+                    <div class="btn-group" role="group" style="height: 30px;">
+                    <button type="button" class="btn btn-secondary" title="Editar" id="edit" style="padding-top:3px;"><i
+                        class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-danger delete" title="Eliminar" style="padding-top:3px;"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                    `
+                }
+            }
+        ]
+    });
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchAuxiliadores() {
+        const response = await fetch(urlBackend + "/choferes",{headers:{Authorization: 'Bearer '+token+''}});
+        const auxiliadores = await response.json();
+        localStorage.setItem('auxiliadores', JSON.stringify(auxiliadores));
+        // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+        table.clear().draw();
+        table.rows.add(auxiliadores).draw();
+    }
+
+    // [ELIMINAR UN AUXILIADOR]
+    $('#tabChoferes tbody').on('click', '.delete', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const chofer = table.row(fila).data();
+        const idModificar = chofer.idChofer;
+
+        Swal.fire({
+            title: 'Está Seguro?',
+            text: "Se eliminará el registro " + chofer.nombre,
+            icon: 'warning',
+            cancelButtonText: "Cancelar",
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(urlBackend + "/choferes/" + idModificar,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer '+token+''
+                        },
+                        method: "DELETE"
+                    })
+                    .then(function (res) { console.log(res); fetchAuxiliadores(); })
+                    .catch(function (res) { console.log(res) })
+
+                Swal.fire(
+                    'Eliminado!',
+                    'El Auxiliador ha sido borrado exitosamente!',
+                    'success'
+                )
+            }
+        })
+    });
+
+    // [EDITAR UN AUXILIADOR]
+    $('#tabChoferes tbody').on('click', '#edit', (e) => {
+        // accedo a la fila para obtener el elemento y sacar los datos
+        const fila = e.target.parentNode.parentNode.parentElement;
+        const chofer = table.row(fila).data();
+        const idModificar = chofer.idChofer;
+
+        document.getElementById('modalTitle').innerText = "Modificar Auxiliador";
+        document.getElementById('modalIdMovil').innerText = chofer.idChofer;
+        modalNombre.value = chofer.nombre;
+        modalCelular.value = chofer.celular;
+
+        $('#modalCrearAux').modal('toggle');
+        document.getElementById('btnSaveModal').onclick = function () {
+
+            fetch(urlBackend + "/choferes/" + idModificar,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "PUT",
+                    body: JSON.stringify({ nombre: inputNombre.value.trim(), celular: inputCelular.value.trim() })
+                })
+                .then(function (res) { console.log(res); fetchAuxiliadores(); })
+                .catch(function (res) { console.log(res) })
+
+            $('#modalCrearAux').modal('toggle');
+        };
+    });
+
+    // [CREAR UN AUXILIADOR]
+    function crearNuevo() {
+        $(".hideDIV").hide();
+        const form = document.getElementById("formModal");
+        document.getElementById('modalTitle').innerText = "Nuevo Auxiliador";
+        modalNombre.value = "";
+        modalCelular.value = "";
+        $('#modalCrearAux').modal('toggle');
+
+        document.getElementById('btnSaveModal').onclick = function () {
+            //Desactivo el boton y le agrego spinner
+            $("#btnSaveModal > span").show();
+            $("#btnSaveModal").prop('disabled', true);
+
+
+            fetch(urlBackend + "/choferes",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+token+''
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ nombre: inputNombre.value, celular: inputCelular.value })
+                })
+                .then(function (res) {
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    console.log(res);
+                    if (res.ok) {
+                        fetchAuxiliadores();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Se ha creado el Auxiliador exitosamente!',
+                            showConfirmButton: true,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al crear!',
+                            showConfirmButton: true,
+                        });
+                    }
+                    $('#modalCrearAux').modal('toggle');
+                })
+                .catch(function (res) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        showConfirmButton: true,
+                    });
+                    //Activo el boton y le agrego spinner
+                    $("#btnSaveModal > span").hide();
+                    $("#btnSaveModal").prop('disabled', false);
+                    $('#modalCrearAux').modal('toggle');
+                })
+            $(".hideDIV").show();
+        }
+    }
+    // Actualizo el ancho de las columnas para reparar el scrollY
+    setTimeout(() => { table.columns.adjust().draw(); }, 100);
+</script>
+
+<style>
+    th {
+        text-align: center !important;
+    }
+
+    .dataTables_filter {
+        float: left !important;
+    }
+</style>

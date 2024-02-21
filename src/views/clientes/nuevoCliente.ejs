@@ -1,0 +1,293 @@
+<div class="ps-md-3 pe-md-3 px-2 py-3 page-body">
+
+    <form class="card border-0" style="background-color: ghostwhite;">
+        <div class="card-header pb-3">
+            <h4 class="card-title mb-0">Nuevo Cliente</h4>
+            <div class="dropdown card-action">
+                <a href="#" class="card-fullscreen" data-bs-toggle="tooltip" title="Ampliar">
+                    <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M3 16m0 1a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1z"></path>
+                        <path d="M4 12v-6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-6"></path>
+                        <path d="M12 8h4v4"></path>
+                        <path d="M16 8l-5 5"></path>
+                    </svg>
+                </a>
+            </div>
+            <div class="col-12">
+                <h6 class="card-title mb-0">Datos básicos</h6>
+                <div class="row g-3 my-3">
+                    <div class="col-sm-3">
+                        <label class="form-label small text-muted">#Id</label>
+                        <input type="text" class="form-control" disabled="" placeholder="#" value="">
+                    </div>
+                    <div class="col-sm-9 col-md-5">
+                        <label class="form-label small text-muted">Nombre(*)</label>
+                        <input type="text" class="form-control" placeholder="Nombre" id="txtNombre" maxlength="100" required>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <label class="form-label small text-muted">Documento(*)</label>
+                        <input class="form-control" placeholder="Documento" id="txtDocumento" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <label class="form-label small text-muted">Teléfono</label>
+                        <input type="text" class="form-control" placeholder="Teléfono" id="txtTelefono" maxlength="10">
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <label class="form-label small text-muted">Celular</label>
+                        <input type="text" class="form-control" placeholder="Celular" id="txtCelular" maxlength="16">
+                    </div>
+                    <div class="col-12 col-sm-7">
+                        <label class="form-label small text-muted">Dirección</label>
+                        <input type="text" class="form-control" placeholder="Dirección" id="txtDireccion" maxlength="50">
+                    </div>
+                    <div class="col-12 col-sm-5">
+                        <label class="form-label small text-muted">Email</label>
+                        <input type="email" class="form-control" placeholder="Email" id="txtEmail" maxlength="20">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">País</label>
+                        <select class="form-control custom-select" id="selectPais">
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Ciudad</label>
+                        <select class="form-control custom-select" id="selectCiudad">
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Localidad</label>
+                        <select class="form-control custom-select" id="selectLocalidad">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body border-top">
+            <div class="row g-4">
+                <div class="col-12">
+                    <h6 class="card-title mb-0">Tipo de Socio</h6>
+                    <div class="row g-3 my-3">
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Tipo de Socio(*)</label>
+                            <select class="form-control custom-select" id="selectTipoSocio" required>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Convenio</label>
+                            <select class="form-control custom-select" id="selectConvenio" disabled>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Afiliación</label>
+                            <select class="form-control custom-select" id="selectAfiliacion" disabled>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-muted">Observaciones</label>
+                            <textarea rows="5" class="form-control"
+                                placeholder="Ingrese las observaciones si corresponde" id="txtObs"></textarea>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: center;">
+                        <label class="form-label small text-muted" style="float: left;">(*) Campo requerido</label>
+                        <button type="submit" class="btn btn-primary" style="width: 300px;" id="btnGuardarCliente"><span
+                                class="spinner-border spinner-border-sm"
+                                style="margin-right: 5px;display:none;"></span>Guardar</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $("#btnGuardarCliente").click((e) => {
+        if (document.getElementsByTagName("form")[0].checkValidity()) {
+            e.preventDefault();
+            crearCliente();
+        }
+    });
+
+
+
+
+    document.getElementById("selectTipoSocio").addEventListener('change', (e) => {
+        // Verifico si se selecciona Convenio (value 4) o socio directo (value 1)
+        if (e.target.selectedIndex == 4) {
+            document.getElementById("selectConvenio").disabled = false;
+            document.getElementById("selectAfiliacion").disabled = true;
+            document.getElementById("selectAfiliacion").selectedIndex = null;
+            document.getElementById("selectConvenio").setAttribute("required", true);
+            document.getElementById("selectAfiliacion").setAttribute("required", false);
+        } else if (e.target.selectedIndex == 1) {
+            document.getElementById("selectAfiliacion").disabled = false;
+            document.getElementById("selectConvenio").disabled = true;
+            document.getElementById("selectConvenio").selectedIndex = null;
+            document.getElementById("selectAfiliacion").setAttribute("required", true);
+            document.getElementById("selectConvenio").setAttribute("required", false);
+        } else {
+            document.getElementById("selectConvenio").disabled = true;
+            document.getElementById("selectConvenio").selectedIndex = null;
+            document.getElementById("selectAfiliacion").disabled = true;
+            document.getElementById("selectAfiliacion").selectedIndex = null;
+            document.getElementById("selectAfiliacion").setAttribute("required", false);
+            document.getElementById("selectConvenio").setAttribute("required", false);
+        }
+    });
+
+    async function crearCliente() {
+        const nombreCli = document.getElementById("txtNombre").value;
+        const docCli = document.getElementById("txtDocumento").value;
+        const dirCli = document.getElementById("txtDireccion").value;
+        const telCli = document.getElementById("txtTelefono").value;
+        const celCli = document.getElementById("txtCelular").value;
+        const idTipoCli = document.getElementById("selectTipoSocio").selectedIndex;
+        const idAfiliacion = document.getElementById("selectAfiliacion").selectedIndex != 0 ? document.getElementById("selectAfiliacion").selectedIndex : null;
+        const idConvenio = document.getElementById("selectConvenio").selectedIndex != 0 ? document.getElementById("selectConvenio").selectedIndex : null;
+        const notasCli = document.getElementById("txtObs").value;
+
+        //Desactivo el boton y le agrego spinner
+        $("#btnGuardarCliente > span").show();
+        $("#btnGuardarCliente").prop('disabled', true);
+
+        fetch(urlBackend + "/clientes",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+token+''
+                },
+                method: "POST",
+                body: JSON.stringify({ nombre: nombreCli, documento: docCli, direccion: dirCli, telefono: telCli, celular: celCli, idTipoCliente: idTipoCli, idAfiliacion: idAfiliacion, idConvenio: idConvenio, notas: notasCli })
+            }).then(response => {
+                if (!response.ok) {
+                    response.text().then(text => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al crear!',
+                            text: text,
+                            showConfirmButton: true,
+                        });
+                    })
+                } else {
+                    document.getElementsByTagName("form")[0].reset();
+                }
+                //Activo el boton y oculto el spinner
+                $("#btnGuardarCliente > span").hide();
+                $("#btnGuardarCliente").prop('disabled', false);
+                return response.json();
+            }).then(data =>
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Cliente creado con el id: ' + data.idCliente + '',
+                    showConfirmButton: true,
+                    timer: 2500
+                }))
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Parece que no hay conexión con la base de datos!',
+                    text: error,
+                    showConfirmButton: true,
+                });
+                //Activo el boton y oculto el spinner
+                $("#btnGuardarCliente > span").hide();
+                $("#btnGuardarCliente").prop('disabled', false);
+            }
+            );
+
+    }
+
+    // Carga de inputs
+    async function cargarPaises() {
+        const response = await fetch(urlBackend + "/localidades/paises",{headers:{Authorization: 'Bearer '+token+''}});
+        const paises = await response.json();
+        const select = document.getElementById("selectPais");
+        select.innerHTML = "";
+        paises.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idPais;
+            select.add(option);
+        });
+    }
+
+    async function cargarCiudades() {
+        const response = await fetch(urlBackend + "/localidades/ciudades",{headers:{Authorization: 'Bearer '+token+''}});
+        const ciudades = await response.json();
+        const select = document.getElementById("selectCiudad");
+        select.innerHTML = "<option value=''>Seleccione...</option>";
+        ciudades.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idCiudad;
+            select.add(option);
+        });
+    }
+
+    async function cargarLocalidades() {
+        const response = await fetch(urlBackend + "/localidades/localidades",{headers:{Authorization: 'Bearer '+token+''}});
+        const localidades = await response.json();
+        const select = document.getElementById("selectLocalidad");
+        select.innerHTML = "<option value=''>Seleccione...</option>";
+        localidades.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idLocalidad;
+            select.add(option);
+        });
+    }
+
+    async function cargarTipoCliente() {
+        const response = await fetch(urlBackend + "/clientes/tipoClientes",{headers:{Authorization: 'Bearer '+token+''}});
+        const tipo = await response.json();
+        const select = document.getElementById("selectTipoSocio");
+        select.innerHTML = "<option value=''>Seleccione...</option>";
+        tipo.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idTipo;
+            select.add(option);
+        });
+    }
+
+    async function cargarAfiliaciones() {
+        const response = await fetch(urlBackend + "/afiliaciones",{headers:{Authorization: 'Bearer '+token+''}});
+        const afiliaciones = await response.json();
+        const select = document.getElementById("selectAfiliacion");
+        select.innerHTML = "<option value=''>Seleccione...</option>";
+        afiliaciones.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idAfiliacion;
+            select.add(option);
+        });
+    }
+
+    async function cargarConvenios() {
+        const response = await fetch(urlBackend + "/convenios",{headers:{Authorization: 'Bearer '+token+''}});
+        const convenios = await response.json();
+        const select = document.getElementById("selectConvenio");
+        select.innerHTML = "<option value=''>Seleccione...</option>";
+        convenios.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idConvenio;
+            select.add(option);
+        });
+    }
+
+    cargarPaises();
+    cargarCiudades();
+    cargarLocalidades();
+    cargarTipoCliente();
+    cargarAfiliaciones();
+    cargarConvenios();
+</script>
+<style>
+</style>

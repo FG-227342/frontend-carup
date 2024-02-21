@@ -1,0 +1,346 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+
+  <div class="card">
+    <div class="card-body">
+
+      <div style="display: flex;flex-direction: row;gap: 20px;">
+        <label for="datepicker-daterangepicker" class="form-label" style="margin-top: 5px;">FECHA</label>
+        <input type="text" placeholder="Periodo de fechas" style="width:250px" id="datepicker-daterangepicker"
+          class="form-control" name="datepicker-daterangepicker">
+        <i class="fa fa-calendar" style="width: 8px;padding-top: 7px;"></i>
+        <button type="button" class="btn btn-primary" style="float: left; width: 250px;" onclick="fetchServicios()">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+      </div>
+
+      <div class="row py-3">
+        <div class="row">
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Tipo de Socio</label>
+            <select class="form-control custom-select" id="selectTipoSocio">
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Convenio</label>
+            <select class="form-control custom-select" id="selectConvenio" disabled>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Afiliación</label>
+            <select class="form-control custom-select" id="selectAfiliacion" disabled>
+            </select>
+          </div>
+        </div>
+
+
+      </div>
+
+
+
+
+
+
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h6 class="card-title">Gestión de servicios</h6>
+      <div class="dropdown card-action">
+        <a href="#" class="card-fullscreen">
+          <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M3 16m0 1a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1z">
+            </path>
+            <path d="M4 12v-6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-6"></path>
+            <path d="M12 8h4v4"></path>
+            <path d="M16 8l-5 5"></path>
+          </svg>
+        </a>
+        <a href="#" class="dropdown-toggle after-none" data-bs-toggle="dropdown" aria-expanded="false"
+          title="More Action">
+          <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"> </path>
+            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+            <path d="M8 12l0 .01"></path>
+            <path d="M12 12l0 .01"></path>
+            <path d="M16 12l0 .01"></path>
+          </svg>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end shadow rounded-4 p-2">
+          <a href="javascript:void(0)" class="dropdown-item rounded-pill"><i class="me-2 fa fa-share"></i>Exportar
+            PDF</a>
+
+          <div class="dropdown-divider"></div>
+          <a href="javascript:void(0)" class="dropdown-item rounded-pill"><i class="me-2 fa fa-arrow-right"></i>Otro</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered nowrap" id="analisisSrv" style="width: 100%">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th></th>
+            <th>Acciones</th>
+            <th>Tarea</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Estado</th>
+            <th>Ciudad</th>
+            <th>Localidad</th>
+            <th>Calle</th>
+            <th>Esquina</th>
+            <th>Dir.Traslado</th>
+            <th>Depto.Traslado</th>
+            <th>Loc.Traslado</th>
+            <th>Falla</th>
+            <th>Usuario</th>
+            <th>Móvil</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+
+  moment.locale('en-ca');
+  let servicios = [];
+  let startDate = moment().format("L");
+  let endDate = moment().format("L");
+
+  // Fetch carga de datos y pinto la tabla
+  async function fetchServicios() {
+    let idTipoS = parseInt(document.getElementById("selectTipoSocio").value);
+    let tipoAf = parseInt(document.getElementById("selectAfiliacion").value);
+    let tipoConv = parseInt(document.getElementById("selectConvenio").value);
+
+ 
+      const bodyData = {
+        fechaInicial: startDate,
+        fechaFinal: endDate
+      }
+      const response = await fetch(urlBackend + "/servicios/todosWebDTO/rangoFechas", {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token + ''
+        }, method: "POST",
+        body: JSON.stringify(bodyData)
+      });
+      servicios = await response.json().then();
+      let ServiciosFiltrados =[];
+      console.log(servicios)
+      // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+      tableAnalisisSrv.clear().draw();
+
+/*
+      if (tipoS =! 0) {
+
+        if (tipoS == 1) {
+          if (tipoAf != 0) {
+            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 && e.cliente.idAfiliacion == tipoAf });
+          } else {
+            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 })
+          }
+          tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
+        } else if (idTipoS == 4) {
+          if(tipoConv!= 0){
+            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 && e.cliente.idConvenio == tipoConv });
+          } else{
+            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 });
+          }
+          tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
+
+
+        }
+       
+
+      } else {*/   //    }
+          tableAnalisisSrv.rows.add(servicios).draw();
+ 
+
+    
+  }
+  var tableAnalisisSrv = $('#analisisSrv').DataTable({
+    info: false,
+    paging: false,
+    scrollX: true,
+    data: servicios,
+    rowCallback: function (row, data, index) {
+      if (index % 2 === 0) {
+        $(row).addClass('classone');
+      }
+    },
+    language: {
+      url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+      zeroRecords: "<div id='loader' style='padding: 20px;display: flex;flex-direction: column;align-items: center;'><p>No hay servicios</p></div>"
+    },
+    columns: [
+      { data: 'idSrv' },
+      {
+        className: 'dt-control',
+        orderable: false,
+        data: null,
+        defaultContent: ''
+      }, {
+        orderable: false,
+        render: function () {
+          return `
+            <div class="d-flex align-items-center">
+              <div class="demo-inline-spacing">
+                <a style="cursor: pointer;" title="Asignar el móvil" class="asignarSrv item-edit text-body"><i class="fa fa-car"></i></a>
+                <a style="cursor: pointer;" title="Regresar a pendiente" class="regPendiente item-edit text-body"><i class="fa fa-history"></i></a>
+                <a style="cursor: pointer;" title="Editar el servicio" class="item-edit text-body"><i class="fa fa-pencil"></i></a>
+                <a style="cursor: pointer;" title="Cancelar el servicio" class="cancelBtn text-body"><i class="fa fa-trash"></i></a>
+                <a style="cursor: pointer;" title="Terminar el servicio" class="deleteBtn text-body"><i class="fa fa-check"></i></a>
+              </div>
+            </div>`;
+        }
+      }, { data: 'idTarea' }, { data: 'fecha' }, { data: 'hora' },
+      {
+        render: function (data, type, row) {
+          switch (row.estado) {
+            case "P":
+              return "PENDIENTE";
+              break;
+            case "A":
+              return "ASIGNADO";
+              break;
+            case "X":
+              return "ACEPTADO";
+              break;
+            case "R":
+              return "RECHAZADO";
+              break;
+            case "C":
+              return "CANCELADO";
+              break;
+            case "F":
+              return "FINALIZADO";
+              break;
+            case "T":
+              return "TERMINADO";
+              break;
+            default:
+              return "-";
+          }
+
+        }
+      },
+      { data: 'ciudadOrigen' }, { data: 'locOrigen' }, { data: 'calleOrigen' }, { data: 'esquinaOrigen' }, { data: 'calleDestino' }, { data: 'ciudadDestino' }, { data: 'locDestino' }, { data: 'falla' }, { data: 'usuario' },
+      {
+        render: function (data, type, row) {
+          return row.nombreMovil != null ? row.nombreMovil : row.nombrePrestador;
+        }
+      }
+    ],
+  });
+
+  // Evento para bloquear selects segun el tipoCliente elegido
+  document.getElementById("selectTipoSocio").addEventListener('change', (e) => {
+    // Verifico si se selecciona Convenio (value 4) o socio directo (value 1)
+    if (e.target.selectedIndex == 4) {
+      document.getElementById("selectConvenio").disabled = false;
+      document.getElementById("selectAfiliacion").disabled = true;
+      document.getElementById("selectAfiliacion").selectedIndex = null;
+    } else if (e.target.selectedIndex == 1) {
+      document.getElementById("selectAfiliacion").disabled = false;
+      document.getElementById("selectConvenio").disabled = true;
+      document.getElementById("selectConvenio").selectedIndex = null;
+    } else {
+      document.getElementById("selectConvenio").disabled = true;
+      document.getElementById("selectConvenio").selectedIndex = null;
+      document.getElementById("selectAfiliacion").disabled = true;
+      document.getElementById("selectAfiliacion").selectedIndex = null;
+    }
+  });
+
+  async function cargarTipoCliente() {
+    const response = await fetch(urlBackend + "/clientes/tipoClientes", { headers: { Authorization: 'Bearer ' + token + '' } });
+    const tipo = await response.json();
+    const select = document.getElementById("selectTipoSocio");
+    select.innerHTML = "<option value='0'>TODOS</option>";
+    tipo.forEach(p => {
+      const option = document.createElement('option');
+      option.text = p.nombre;
+      option.value = p.idTipo;
+      select.add(option);
+    });
+  }
+
+  async function cargarAfiliaciones() {
+    const response = await fetch(urlBackend + "/afiliaciones", { headers: { Authorization: 'Bearer ' + token + '' } });
+    const afiliaciones = await response.json();
+    const select = document.getElementById("selectAfiliacion");
+    select.innerHTML = "<option value='0'>TODAS</option>";
+    afiliaciones.forEach(p => {
+      const option = document.createElement('option');
+      option.text = p.nombre;
+      option.value = p.idAfiliacion;
+      select.add(option);
+    });
+  }
+
+  async function cargarConvenios() {
+    const response = await fetch(urlBackend + "/convenios", { headers: { Authorization: 'Bearer ' + token + '' } });
+    const convenios = await response.json();
+    const select = document.getElementById("selectConvenio");
+    select.innerHTML = "<option value='0'>TODOS</option>";
+    convenios.forEach(p => {
+      const option = document.createElement('option');
+      option.text = p.nombre;
+      option.value = p.idConvenio;
+      select.add(option);
+    });
+  }
+  cargarTipoCliente();
+  cargarAfiliaciones();
+  cargarConvenios();
+
+
+
+  // CALENDARIO
+  $('#datepicker-daterangepicker').daterangepicker(
+    {
+      "language": 'es',
+      "locale": {
+        "format": "DD/MM/YYYY",
+      },
+      "ranges": {
+        'Hoy': [moment(), moment()],
+        'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+        'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+        'Este mes': [moment().startOf('month'), moment().endOf('month')],
+        'El mes pasado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+
+      }
+    },
+    function (start, end) {
+      startDate = start.format('YYYY-MM-DD');
+      endDate = end.format('YYYY-MM-DD');
+    }
+  );
+
+</script>
+
+<style>
+  .classone>td {
+    background-color: #dddddd !important;
+  }
+
+  .dataTables_scrollBody {
+    padding-bottom: 200px;
+    height: 500px;
+  }
+</style>

@@ -1,0 +1,207 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card">
+        <div class="card-body">
+            <h4>Usuarios de la plataforma Móvil</h4>
+            <div class="col-10 offset-1">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="crearNuevoUsrMobile()"
+                        style="float:right; margin:10px">
+                        <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                    </button>
+                </div>
+                <table class="table table-striped table-bordered text-center" id="tabUserMobile" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#Id</th>
+                            <th>Nombre</th>
+                            <th>Prestador</th>
+                            <th>Chofer Carup</th>
+                            <th>PlayerId</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo Usuario-->
+<div class="modal fade" id="modarlCrearUsrMobile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="hideDIV">
+                                    <label class="form-label">ID:</label>
+                                    <label class="form-label" id="modalIdUsuarioM"></label>
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check form-switch col-6">
+                                    <input class="form-check-input" type="checkbox" id="checkEsCarup"
+                                        style="transform: scale(1.2);">
+                                    <label class="form-check-label">Es Prestador?</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label for="modalNombreM" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="modalNombreM"
+                                    placeholder="Ingrese el nombre" style="text-transform:uppercase" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="modalchoferM" class="form-label">Chofer Carup</label>
+                                <select id="modalchoferM" class="form-control">
+                                    <option value="0">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label for="modalClaveM" class="form-label">Clave</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="modalClaveM"
+                                        placeholder="INGRESE LA CONTRASEÑA" aria-label="Password"
+                                        aria-describedby="togglePasswordButton">
+                                    <button type="button" class="btn btn-outline-secondary" id="togglePasswordButton">
+                                        <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="modalPrestadorM" class="form-label">Prestador</label>
+                                <select class="form-control" id="modalPrestadorM" disabled>
+                                    <option value="0">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveModal"><span
+                        class="spinner-border spinner-border-sm"
+                        style="margin-right: 5px;display:none;"></span>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let usrMobile = [];
+    const t = $('#tabUserMobile').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        searching: false,
+        paging: false,
+        info: false,
+        data: usrMobile,
+        columns: [
+            { data: 'idUsuario' },
+            { data: 'nombre' },
+            { data: 'prestador.nombre' },
+            { data: 'chofer.nombre' },
+            { data: 'playerId' },
+            {
+                data: null,
+                render: function (item) {
+                    return `
+                    <div class="btn-group" role="group" style="height: 30px;">
+                    <button type="button" class="btn btn-secondary" title="Editar" id="edit" style="padding-top:3px;"><i
+                        class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-danger delete" title="Eliminar" style="padding-top:3px;"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                    `
+                }
+            }
+        ]
+    });
+
+    // Fetch carga de datos y pinto la tabla
+    async function fetchUsrMobile() {
+        const response = await fetch(urlBackend + "/usuariosMobile", { headers: { Authorization: 'Bearer ' + token + '' } });
+        const usrs = await response.json();
+        console.log(usrs)
+        t.clear().draw();
+        t.rows.add(usrs).draw();
+    }
+
+
+    fetchUsrMobile();
+
+    function crearNuevoUsrMobile() {
+        $('#modarlCrearUsrMobile').modal('toggle');
+
+        data = {
+            
+        }
+        if (document.getElementById("checkEsCarup").checked) {
+
+        }
+    }
+
+    document.getElementById("checkEsCarup").addEventListener('change', (e) => {
+        if (document.getElementById("checkEsCarup").checked) {
+            document.getElementById("modalPrestadorM").disabled = false;
+            document.getElementById("modalchoferM").disabled = true;
+            document.getElementById("modalchoferM").selectedIndex = null;
+        } else{
+            document.getElementById("modalPrestadorM").disabled = true;
+            document.getElementById("modalchoferM").disabled = false;
+            document.getElementById("modalPrestadorM").selectedIndex = null;
+        }
+    });
+
+
+    // carga de datos
+    let choferes;
+    let concesionarios;
+    (async function cargarDatos() {
+        choferes = await JSON.parse(localStorage.getItem('choferes'));
+        concesionarios = await JSON.parse(localStorage.getItem('concesionarios'));
+        popularSelects();
+    })();
+
+    function popularSelects() {
+        const slcConcecionario = document.getElementById("modalPrestadorM");
+        const slcChoferM = document.getElementById("modalchoferM");
+        slcChoferM.innerText = "";
+        slcConcecionario.innerText = "";
+
+        slcConcecionario.innerHTML = "<option value=''>Seleccione...</option>";
+        concesionarios.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idPrestador;
+            slcConcecionario.add(option);
+        });
+
+        slcChoferM.innerHTML = "<option value=''>Seleccione...</option>";
+        choferes.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idChofer;
+            slcChoferM.add(option);
+        });
+    }
+
+</script>
+
+<style>
+    th {
+        text-align: center !important;
+    }
+</style>

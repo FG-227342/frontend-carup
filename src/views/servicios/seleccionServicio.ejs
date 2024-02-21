@@ -1,0 +1,295 @@
+<div class="ps-md-4 pe-md-3 px-2 py-3 page-body">
+    <div class="card text-center" style="padding: 30px;">
+        <h4 style="padding:20px">ACCESO RÁPIDO</h4>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color6);">
+                        <div class="card-body" onclick="ingresarSrvHarcoded(1)">
+                            <span class="text-truncate">Servicio Directo</span>
+                            <h3 class="mb-0 mt-1">CARUP</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--bs-blue);">
+                        <div class="card-body" onclick="ingresarSrvHarcoded(4)">
+                            <span>Nuevo servicio Banco de Seguros</span>
+                            <h3 class="mb-0 mt-1">B.S.E</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--bs-danger);">
+                        <div class="card-body" onclick="ingresarSrvHarcoded(9)">
+                            <span>Servicios varios</span>
+                            <h3 class="mb-0 mt-1">OTROS</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <h4 style="padding:20px">Ingreso de nuevo servicio</h4>
+            <div class="row principal">
+                <div class="cardSrv">
+                    <h4>CAR-UP</h4>
+                    <div class="row">
+                        <div class="col-12 col-lg-10" style="text-align: left">
+                            <label class="form-label">Búsqueda por N° documento</label>
+                            <input type="text" id="txtBuscarDirecto" class="form-control"
+                                placeholder="Ingrese el documento a buscar"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="8">
+                        </div>
+                        <div class="col-lg-2" style="padding-top: 30px;">
+                            <button value="Buscar" class="btn btn-primary search" onclick="buscarDirecto()"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cardSrv">
+                    <h4>BSE</h4>
+                    <div class="row">
+                        <div class="col-12 col-lg-10" style="text-align: left">
+                            <label class="form-label">Búsqueda por Matrícula</label>
+                            <input type="text" id="txtBuscarBSE" class="form-control" placeholder="Ingrese la matrícula"
+                                value="" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')" maxlength="8">
+                        </div>
+                        <div class="col-lg-2" style="padding-top: 30px;">
+                            <button value="Buscar" class="btn btn-primary search" onclick="buscarBSE()"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cardSrv">
+                    <h4>OTROS</h4>
+                    <div class="row">
+                        <div class="col-12 col-lg-10" style="text-align: left">
+                            <label class="form-label">Búsqueda por ID</label>
+                            <input type="text" class="form-control" placeholder="Ingrese el id a buscar" value=""
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="col-lg-2" style="padding-top: 30px;">
+                            <button value="Buscar" class="btn btn-primary search"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card text-center" style="padding: 30px;">
+        <h4 style="padding:20px">ACUERDOS</h4>
+        <div class="card-body">
+
+
+            <div class="row row-cols-xl-6 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3 mb-3">
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color1);">
+                        <div class="card-body">
+                            <span class="text-truncate">SOS ARGENTINA</span>
+                            <h3 class="mb-0 mt-1">S.O.S</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color2);">
+                        <div class="card-body">
+                            <span>EUROP</span>
+                            <h3 class="mb-0 mt-1">EUROP</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color3);">
+                        <div class="card-body">
+                            <span>CARDINAL</span>
+                            <h3 class="mb-0 mt-1">CARDINAL</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color4);">
+                        <div class="card-body">
+                            <span>AUTOLIDER</span>
+                            <h3 class="mb-0 mt-1">AUSA</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color5);">
+                        <div class="card-body">
+                            <span>MULTIMOTORS</span>
+                            <h3 class="mb-0 mt-1">BMW</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card cardtext-color" style="--dynamic-color: var(--theme-color6);">
+                        <div class="card-body">
+                            <span>CAMUR</span>
+                            <h3 class="mb-0 mt-1">ETC</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    async function buscarDirecto() {
+
+        const inputDocumento = document.getElementById("txtBuscarDirecto");
+        const documento = inputDocumento.value;
+
+        if (documento == "") {
+            SnackBar({
+                message: "Debe ingresar una cédula",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+
+            // const response = await fetch(urlBackend + "/clientes/buscarDirecto/" + documento, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e =>{
+            const response = await fetch(urlBackend + "/clientes/clienteCARUP/" + documento, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                Swal.fire({
+                    status: 'danger',
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    showConfirmButton: true,
+                });
+            });
+
+            if (response.ok) {
+                const Cliente = await response.json();
+
+                //console.log("CLI" + Cliente)
+
+                fetch(apiFrontend + '/servicio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    body: JSON.stringify(Cliente)
+                });
+                window.location.replace("/servicio");
+            } else if (response.status == 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se encontró al cliente',
+                    showConfirmButton: true,
+                });
+            }
+        }
+
+    }
+
+    async function buscarBSE() {
+
+        const inputMatricula = document.getElementById("txtBuscarBSE");
+        const matricula = inputMatricula.value;
+
+        if (matricula == "") {
+            SnackBar({
+                message: "Debe ingresar una matrícula",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+            const response = await fetch(urlBackend + "/clientes/clienteBsePorMatricula/" + matricula, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                SnackBar({
+                    message: "Error de conexión",
+                    status: "danger",
+                    timeout: 2500,
+                    icon: "danger",
+                    position: "tc",
+                    width: "400px"
+                });
+            });
+
+            if (response.ok) {
+                const Cliente = await response.json();
+                //console.log(Cliente)
+                fetch(apiFrontend + '/servicio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    body: JSON.stringify(Cliente)
+                });
+                window.location.replace("/servicio");
+            } else if (response.status == 404) {
+                SnackBar({
+                    message: "No se encontró el cliente",
+                    status: "warning",
+                    timeout: 2500,
+                    icon: "warn",
+                    position: "tc",
+                    width: "400px"
+                });
+            }
+
+
+        }
+    }
+
+    async function ingresarSrvHarcoded(idCli) {
+
+        const response = await fetch(urlBackend + "/clientes/" + idCli, { headers: { Authorization: 'Bearer ' + token + '' } });
+
+        if (response.ok) {
+            const Cliente = await response.json();
+            //console.log("Desde seleccionServicio:", Cliente);
+            const f = await fetch(apiFrontend + '/servicio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + ''
+                },
+                body: JSON.stringify(Cliente)
+            });
+
+
+            window.location.replace("/servicio");
+
+        }
+
+
+    }
+</script>
+
+<style>
+    .cardSrv {
+        padding: 20px;
+        border: 2px solid #0dcaf0;
+        border-radius: 20px;
+        width: 30%;
+        padding-bottom: 50px;
+    }
+
+    .principal {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .cardtext-color {
+        cursor: pointer;
+    }
+</style>
