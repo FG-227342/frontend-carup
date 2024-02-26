@@ -58,11 +58,12 @@
                             <div class="col-12 col-md-6">
                                 <label for="modalNombreM" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="modalNombreM"
-                                    placeholder="Ingrese el nombre" style="text-transform:uppercase" required>
+                                    placeholder="Ingrese el nombre" style="text-transform:uppercase" maxlength="30"
+                                    required>
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="modalchoferM" class="form-label">Chofer Carup</label>
-                                <select id="modalchoferM" class="form-control">
+                                <select id="modalchoferM" class="form-control" required>
                                     <option value="0">Seleccione...</option>
                                 </select>
                             </div>
@@ -71,9 +72,9 @@
                             <div class="col-12 col-md-6">
                                 <label for="modalClaveM" class="form-label">Clave</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="modalClaveM"
+                                    <input type="password" class="form-control" id="modalClave"
                                         placeholder="INGRESE LA CONTRASEÑA" aria-label="Password"
-                                        aria-describedby="togglePasswordButton">
+                                        aria-describedby="togglePasswordButton" maxlength="60">
                                     <button type="button" class="btn btn-outline-secondary" id="togglePasswordButton">
                                         <i class="bi bi-eye" id="togglePasswordIcon"></i>
                                     </button>
@@ -91,9 +92,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnSaveModal"><span
+                <button type="button" class="btn btn-primary" onclick="saveNewUserMobile()"><span
                         class="spinner-border spinner-border-sm"
-                        style="margin-right: 5px;display:none;"></span>Guardar</button>
+                        style="margin-right: 5px;display:none;"></span>Crear</button>
             </div>
         </form>
     </div>
@@ -142,15 +143,9 @@
 
     fetchUsrMobile();
 
+    // abrir Modal
     function crearNuevoUsrMobile() {
         $('#modarlCrearUsrMobile').modal('toggle');
-
-        data = {
-            
-        }
-        if (document.getElementById("checkEsCarup").checked) {
-
-        }
     }
 
     document.getElementById("checkEsCarup").addEventListener('change', (e) => {
@@ -158,12 +153,107 @@
             document.getElementById("modalPrestadorM").disabled = false;
             document.getElementById("modalchoferM").disabled = true;
             document.getElementById("modalchoferM").selectedIndex = null;
-        } else{
+        } else {
             document.getElementById("modalPrestadorM").disabled = true;
             document.getElementById("modalchoferM").disabled = false;
             document.getElementById("modalPrestadorM").selectedIndex = null;
         }
     });
+
+    // GUARDAR NUEVO USERMOBILE
+    function saveNewUserMobile() {
+        data = {
+            nombre: document.getElementById("modalNombreM").value,
+            clave: document.getElementById("modalClave").value,
+            playerId: ""
+        }
+
+        if (document.getElementById("checkEsCarup").checked) {
+            data.prestador = { "idPrestador": parseInt(document.getElementById("modalPrestadorM").value) };
+            document.getElementById("modalchoferM").setAttribute("required", false);
+            document.getElementById("modalPrestadorM").setAttribute("required", true);
+        } else {
+            data.chofer = { "idChofer": parseInt(document.getElementById("modalchoferM").value) }
+            document.getElementById("modalchoferM").setAttribute("required", true);
+            document.getElementById("modalPrestadorM").setAttribute("required", false);
+        }
+
+
+        if (document.getElementById("formModal").checkValidity()) {
+            console.log(data)
+
+            // FETCH
+            fetch(urlBackend + "/usuariosMobile",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "POST",
+                    body: JSON.stringify(data)
+                })
+                .then(function (res) {
+                    if (res.ok) {
+                        fetchUsrMobile();
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Se ha creado el Usuario exitosamente!',
+                            showConfirmButton: true,
+                            timer: 1500
+                        });
+                    }
+                    else if (res.status === 409) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'warning',
+                            title: 'El usuario ' + data.nombre + ' ya existe!',
+                            showConfirmButton: true
+                        });
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al crear!',
+                            showConfirmButton: true,
+                        });
+                    }
+
+                    $('#modarlCrearUsrMobile').modal('toggle');
+                })
+                .catch(function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        showConfirmButton: true,
+                    });
+                    $('#modarlCrearUsrMobile').modal('toggle');
+                })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Debe ingresar todos los campos!',
+                text: "Los datos de usuario están incompletos",
+                showConfirmButton: true,
+            });
+        }
+    }
 
 
     // carga de datos
@@ -197,6 +287,23 @@
             slcChoferM.add(option);
         });
     }
+
+    // JavaScript toggle input PASSWORD
+    const modalClave = document.getElementById('modalClave');
+    const togglePasswordButton = document.getElementById('togglePasswordButton');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+    togglePasswordButton.addEventListener('click', function () {
+        if (modalClave.type === 'password') {
+            modalClave.type = 'text';
+            togglePasswordIcon.classList.remove('bi-eye');
+            togglePasswordIcon.classList.add('bi-eye-slash');
+        } else {
+            modalClave.type = 'password';
+            togglePasswordIcon.classList.remove('bi-eye-slash');
+            togglePasswordIcon.classList.add('bi-eye');
+        }
+    });
 
 </script>
 

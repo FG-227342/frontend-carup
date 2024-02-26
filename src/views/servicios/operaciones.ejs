@@ -164,6 +164,7 @@
             <th>Tarea</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Llegada</th>
             <th>Ciudad</th>
             <th>Localidad</th>
             <th>Calle</th>
@@ -317,7 +318,13 @@
               </div>
             </div>`;
         }
-      }, { data: 'idTarea' }, { data: 'fecha' }, { data: 'hora' }, { data: 'ciudadOrigen' }, { data: 'locOrigen' }, { data: 'calleOrigen' }, { data: 'esquinaOrigen' }, { data: 'calleDestino' }, { data: 'ciudadDestino' }, { data: 'locDestino' }, { data: 'falla' }, { data: 'usuario' },
+      }, { data: 'idTarea' }, { data: 'fecha' }, { data: 'hora' }, 
+      {
+        render: function (data, type, row) {
+          return row.llegadaLugar == 0 ? "NO" : "SI";
+        }
+      }, 
+      { data: 'ciudadOrigen' }, { data: 'locOrigen' }, { data: 'calleOrigen' }, { data: 'esquinaOrigen' }, { data: 'calleDestino' }, { data: 'ciudadDestino' }, { data: 'locDestino' }, { data: 'falla' }, { data: 'usuario' },
       {
         render: function (data, type, row) {
           return row.nombreMovil != null ? row.nombreMovil : row.nombrePrestador;
@@ -396,9 +403,11 @@
 
     table.rows.add(resultado).draw();
     if (estadoServicios == 'P') {
-      table.column(15).visible(false);
+      table.column(16).visible(false);
+      table.column(6).visible(false);
     } else {
-      table.column(15).visible(true);
+      table.column(16).visible(true);
+      table.column(6).visible(true);
     }
 
   }
@@ -549,6 +558,9 @@
       }
     }
 
+    $("#btnSaveModal > span").show();
+    $("#btnSaveModal").prop('disabled', true);
+
     fetch(urlBackend + "/servicios/asignarMovil/" + idServicio,
       {
         headers: {
@@ -586,6 +598,8 @@
           $('#modalAsignar').modal('toggle');
           contarServicios();
         }
+        $("#btnSaveModal > span").hide();
+        $("#btnSaveModal").prop('disabled', false);
         return response.json();
       }).then(data => {
         console.log(data);
@@ -597,6 +611,8 @@
           text: error,
           showConfirmButton: true,
         });
+        $("#btnSaveModal > span").hide();
+        $("#btnSaveModal").prop('disabled', false);
       }
       );
     contarServicios();
@@ -669,7 +685,7 @@
     // `d` is the original data object for the row
     return (
       `
-  <div class="col-6" style="float: left;">
+  <div class="col-5" style="float: left;">
     
     <br>
     <button type="button" class="btn btn-outline-secondary" style="float: right;margin-right: 30px;" onclick="copiarContenido(this)" title="Copiar al portapapeles"><i class="fa fa-clipboard"></i></button>
@@ -682,12 +698,15 @@
     ----------------------------------------------------
     <p><strong><i class="fa fa-car-burst"></i> Falla:</strong> ${d.falla}</p>
     ----------------------------------------------------
-    <p>${d.paisDestino != undefined ? d.paisDestino + "-" : ""} ${d.locDestino} - ${d.ciudadDestino} </p>
+    ${d.calleDestino == "" ? "" :
+        `<p>${d.paisDestino != undefined ? d.paisDestino + "-" : ""} ${d.locDestino} - ${d.ciudadDestino} </p>
     <p><strong><i class="fa fa-route"></i> Traslada hacia:</strong> ${d.calleDestino}</p>
-    ----------------------------------------------------
+    ----------------------------------------------------`
+      }
+    
       <p><strong><i class="fa fa-comment-dots"></i> Observaciones:</strong> ${d.observaciones}</p>
     </div>
-  <div class="col-6" style="float: left;">
+  <div class="col-7" style="float: left;">
     ${(d.latitud != undefined && d.longitud != undefined) && (d.latitud != "" && d.longitud != "") ? `<div class="mapouter">
                     <div class="gmap_canvas"><iframe width="800" height="430" id="gmap_canvas"
                             src="https://maps.google.com/maps?q=loc:${d.latitud}+${d.longitud}&t=&z=17&ie=UTF8&iwloc=&output=embed"

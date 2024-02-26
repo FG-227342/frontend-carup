@@ -55,33 +55,13 @@
                 <!--[ Start:: general]-->
                 <div class="tab-pane fade  active show" id="setting-general" role="tabpanel">
 
-
                     <div class="card">
                         <div class="card-header">
                             <h5 class="mb-1">Información General</h5>
                         </div>
 
-
-
                         <form class="card border-0" style="background-color: ghostwhite;">
                             <div class="card-header pb-3">
-                                <h4 class="card-title mb-0">Nuevo Cliente</h4>
-                                <div class="dropdown card-action">
-                                    <a href="#" class="card-fullscreen" data-bs-toggle="tooltip" title="Ampliar">
-                                        <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="20"
-                                            height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path
-                                                d="M3 16m0 1a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1z">
-                                            </path>
-                                            <path d="M4 12v-6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-6">
-                                            </path>
-                                            <path d="M12 8h4v4"></path>
-                                            <path d="M16 8l-5 5"></path>
-                                        </svg>
-                                    </a>
-                                </div>
                                 <div class="col-12">
                                     <h6 class="card-title mb-0">Datos básicos</h6>
                                     <div class="row g-3 my-3">
@@ -122,17 +102,17 @@
                                                 id="txtEmailCli" maxlength="20">
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-4" style="display: none;">
                                             <label class="form-label small text-muted">País</label>
                                             <select class="form-control custom-select" id="selectPais">
                                             </select>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4" style="display: none;">
                                             <label class="form-label small text-muted">Ciudad</label>
                                             <select class="form-control custom-select" id="selectCiudad">
                                             </select>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4" style="display: none;">
                                             <label class="form-label small text-muted">Localidad</label>
                                             <select class="form-control custom-select" id="selectLocalidad">
                                             </select>
@@ -153,13 +133,12 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label small text-muted">Convenio</label>
-                                                <select class="form-control custom-select" id="selectConvenio" disabled>
+                                                <select class="form-control custom-select" id="selectConvenio">
                                                 </select>
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label small text-muted">Afiliación</label>
-                                                <select class="form-control custom-select" id="selectAfiliacion"
-                                                    disabled>
+                                                <select class="form-control custom-select" id="selectAfiliacion">
                                                 </select>
                                             </div>
                                             <div class="col-md-12">
@@ -196,8 +175,8 @@
                             <h5 class="mb-1">Mis Vehículos</h5>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered nowrap table-striped text-center" id="detalleMisVehiculos"
-                                style="width: 100%;">
+                            <table class="table table-bordered nowrap table-striped text-center"
+                                id="detalleMisVehiculos" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>#ID</th>
@@ -226,8 +205,22 @@
 <script>
     const cli = '<%= targetCli %>';
 
-    getCliente(cli);
+    cargarPaises();
+    cargarCiudades();
+    cargarLocalidades();
+    cargarTipoCliente();
+    cargarAfiliaciones();
+    cargarConvenios();
+
+
     let Vehiculos = [];
+    let globalIdCliente;
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Tu función aquí
+        getCliente(cli);
+    });
 
     async function getCliente(idBuscado) {
         const response = await fetch(urlBackend + "/clientes/" + idBuscado, {
@@ -238,18 +231,19 @@
             }
         });
         let cli = await response.json();
+        globalIdCliente = cli.idCliente;
         console.log(cli)
 
         // Carga de Inputs
         document.getElementById("spanNomCli").innerText = cli.nombre;
-        document.getElementById("spanEmailCli").innerText = "email@email.com";
+        document.getElementById("spanEmailCli").innerText = cli.email;
         document.getElementById("spanCliId").value = cli.idCliente;
         document.getElementById("txtNombreCli").value = cli.nombre;
         document.getElementById("txtDocumentoCli").value = cli.documento;
         document.getElementById("txtTelefonCli").value = cli.telefono;
         document.getElementById("txtCelularCli").value = cli.celular;
         document.getElementById("txtDireccionCli").value = cli.direccion;
-        document.getElementById("txtEmailCli").value = "";
+        document.getElementById("txtEmailCli").value = cli.email;
         document.getElementById("selectPais").value = 0;
         document.getElementById("selectCiudad").value = 0;
         document.getElementById("selectLocalidad").value = 0;
@@ -257,12 +251,84 @@
         document.getElementById("selectConvenio").value = cli.idConvenio;
         document.getElementById("selectAfiliacion").value = cli.idAfiliacion;
         document.getElementById("txtObsCli").value = cli.notas;
+        document.getElementById("selectTipoSocio").selectedIndex = cli.idTipoCliente;
+        document.getElementById("selectAfiliacion").selectedIndex = cli.idAfiliacion != 0 ? cli.idAfiliacion : 0;
+        document.getElementById("selectConvenio").selectedIndex = cli.idConvenio != 0 ? cli.idConvenio : 0;
+        if (cli.idAfiliacion != 0) {
+            console.log("asd")
+            document.getElementById("selectAfiliacion").disabled = false;
+            document.getElementById("selectConvenio").disabled = true;
+        }
+        else if (cli.idConvenio != 0) {
+            document.getElementById("selectAfiliacion").disabled = true;
+            document.getElementById("selectConvenio").disabled = false;
+        }
+        cargarVehiculos(cli.idCliente);
     }
 
     $("#btnGuardarCliente").click((e) => {
         if (document.getElementsByTagName("form")[0].checkValidity()) {
             e.preventDefault();
-            // funcion actualziar cliente, put?
+
+
+            const cliActualizar = {
+                "nombre": document.getElementById("txtNombreCli").value,
+                "documento": document.getElementById("txtDocumentoCli").value,
+                "direccion": document.getElementById("txtDireccionCli").value,
+                "telefono": document.getElementById("txtTelefonCli").value,
+                "celular": document.getElementById("txtCelularCli").value,
+                "idTipoCliente": document.getElementById("selectTipoSocio").selectedIndex,
+                "idAfiliacion": document.getElementById("selectAfiliacion").selectedIndex != 0 ? document.getElementById("selectAfiliacion").selectedIndex : null,
+                "idConvenio": document.getElementById("selectConvenio").selectedIndex != 0 ? document.getElementById("selectConvenio").selectedIndex : null,
+                "alta": true,
+                "notas": document.getElementById("txtObsCli").value,
+                "email": document.getElementById("txtEmailCli").value
+            }
+
+            fetch(urlBackend + "/clientes/" + globalIdCliente,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "PUT",
+                    body: JSON.stringify(cliActualizar)
+                }).then(response => {
+                    if (!response.ok) {
+                        response.text().then(text => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hubo un error al actualizar!',
+                                text: text,
+                                showConfirmButton: true,
+                            });
+                        })
+                    }
+                    return response.json();
+                }).then(data => {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Cliente [' + data.nombre + '] actualizado!',
+                        showConfirmButton: true,
+                        timer: 2500
+                    });
+
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        text: error,
+                        showConfirmButton: true,
+                    });
+                }
+                );
+
+
+
+
         }
     });
 
@@ -297,7 +363,7 @@
         info: false,
         paging: false,
         scrollX: true,
-        scrollY:'400px',
+        scrollY: '400px',
         data: Vehiculos,
         bFilter: false,
         language: {
@@ -328,7 +394,7 @@
 
     }
 
-    cargarVehiculos(1);
+
 
 
     // Carga de inputs
@@ -410,12 +476,7 @@
         });
     }
 
-    cargarPaises();
-    cargarCiudades();
-    cargarLocalidades();
-    cargarTipoCliente();
-    cargarAfiliaciones();
-    cargarConvenios();
+
 
     document.getElementById("aTabVehiculos").addEventListener('click', () => {
         detalleMisVehiculos.columns.adjust();

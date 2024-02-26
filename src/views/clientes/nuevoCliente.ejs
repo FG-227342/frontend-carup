@@ -25,11 +25,13 @@
                     </div>
                     <div class="col-sm-9 col-md-5">
                         <label class="form-label small text-muted">Nombre(*)</label>
-                        <input type="text" class="form-control" placeholder="Nombre" id="txtNombre" maxlength="100" required>
+                        <input type="text" class="form-control" placeholder="Nombre" id="txtNombre" maxlength="100"
+                            required>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <label class="form-label small text-muted">Documento(*)</label>
-                        <input class="form-control" placeholder="Documento" id="txtDocumento" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                        <input class="form-control" placeholder="Documento" id="txtDocumento" maxlength="8"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                     </div>
                     <div class="col-sm-6 col-md-6">
                         <label class="form-label small text-muted">Teléfono</label>
@@ -41,24 +43,25 @@
                     </div>
                     <div class="col-12 col-sm-7">
                         <label class="form-label small text-muted">Dirección</label>
-                        <input type="text" class="form-control" placeholder="Dirección" id="txtDireccion" maxlength="50">
+                        <input type="text" class="form-control" placeholder="Dirección" id="txtDireccion"
+                            maxlength="50">
                     </div>
                     <div class="col-12 col-sm-5">
                         <label class="form-label small text-muted">Email</label>
                         <input type="email" class="form-control" placeholder="Email" id="txtEmail" maxlength="20">
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label class="form-label small text-muted">País</label>
                         <select class="form-control custom-select" id="selectPais">
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label class="form-label small text-muted">Ciudad</label>
                         <select class="form-control custom-select" id="selectCiudad">
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label class="form-label small text-muted">Localidad</label>
                         <select class="form-control custom-select" id="selectLocalidad">
                         </select>
@@ -149,6 +152,7 @@
         const idAfiliacion = document.getElementById("selectAfiliacion").selectedIndex != 0 ? document.getElementById("selectAfiliacion").selectedIndex : null;
         const idConvenio = document.getElementById("selectConvenio").selectedIndex != 0 ? document.getElementById("selectConvenio").selectedIndex : null;
         const notasCli = document.getElementById("txtObs").value;
+        const email = document.getElementById("txtEmail").value;
 
         //Desactivo el boton y le agrego spinner
         $("#btnGuardarCliente > span").show();
@@ -159,12 +163,12 @@
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer '+token+''
+                    'Authorization': 'Bearer ' + token + ''
                 },
                 method: "POST",
-                body: JSON.stringify({ nombre: nombreCli, documento: docCli, direccion: dirCli, telefono: telCli, celular: celCli, idTipoCliente: idTipoCli, idAfiliacion: idAfiliacion, idConvenio: idConvenio, notas: notasCli })
+                body: JSON.stringify({ nombre: nombreCli, documento: docCli, direccion: dirCli, telefono: telCli, celular: celCli, idTipoCliente: idTipoCli, idAfiliacion: idAfiliacion, idConvenio: idConvenio, notas: notasCli, email:email })
             }).then(response => {
-                if (!response.ok) {
+                if (!response.ok && response.status != 409) {
                     response.text().then(text => {
                         Swal.fire({
                             icon: 'error',
@@ -173,7 +177,15 @@
                             showConfirmButton: true,
                         });
                     })
-                } else {
+                } else if (response.status == 409) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Hubo un error al crear!',
+                        text: "Ya existe el Cliente con documento " + docCli + " para el Convenio Seleccionado",
+                        showConfirmButton: true,
+                    });
+                }
+                else {
                     document.getElementsByTagName("form")[0].reset();
                 }
                 //Activo el boton y oculto el spinner
@@ -188,24 +200,18 @@
                     showConfirmButton: true,
                     timer: 2500
                 }))
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Parece que no hay conexión con la base de datos!',
-                    text: error,
-                    showConfirmButton: true,
-                });
-                //Activo el boton y oculto el spinner
-                $("#btnGuardarCliente > span").hide();
-                $("#btnGuardarCliente").prop('disabled', false);
-            }
-            );
+        /*
+                   //Activo el boton y oculto el spinner
+                   $("#btnGuardarCliente > span").hide();
+                   $("#btnGuardarCliente").prop('disabled', false);
+               
+               */
 
     }
 
     // Carga de inputs
     async function cargarPaises() {
-        const response = await fetch(urlBackend + "/localidades/paises",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/localidades/paises", { headers: { Authorization: 'Bearer ' + token + '' } });
         const paises = await response.json();
         const select = document.getElementById("selectPais");
         select.innerHTML = "";
@@ -218,7 +224,7 @@
     }
 
     async function cargarCiudades() {
-        const response = await fetch(urlBackend + "/localidades/ciudades",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/localidades/ciudades", { headers: { Authorization: 'Bearer ' + token + '' } });
         const ciudades = await response.json();
         const select = document.getElementById("selectCiudad");
         select.innerHTML = "<option value=''>Seleccione...</option>";
@@ -231,7 +237,7 @@
     }
 
     async function cargarLocalidades() {
-        const response = await fetch(urlBackend + "/localidades/localidades",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/localidades/localidades", { headers: { Authorization: 'Bearer ' + token + '' } });
         const localidades = await response.json();
         const select = document.getElementById("selectLocalidad");
         select.innerHTML = "<option value=''>Seleccione...</option>";
@@ -244,7 +250,7 @@
     }
 
     async function cargarTipoCliente() {
-        const response = await fetch(urlBackend + "/clientes/tipoClientes",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/clientes/tipoClientes", { headers: { Authorization: 'Bearer ' + token + '' } });
         const tipo = await response.json();
         const select = document.getElementById("selectTipoSocio");
         select.innerHTML = "<option value=''>Seleccione...</option>";
@@ -257,7 +263,7 @@
     }
 
     async function cargarAfiliaciones() {
-        const response = await fetch(urlBackend + "/afiliaciones",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/afiliaciones", { headers: { Authorization: 'Bearer ' + token + '' } });
         const afiliaciones = await response.json();
         const select = document.getElementById("selectAfiliacion");
         select.innerHTML = "<option value=''>Seleccione...</option>";
@@ -270,7 +276,7 @@
     }
 
     async function cargarConvenios() {
-        const response = await fetch(urlBackend + "/convenios",{headers:{Authorization: 'Bearer '+token+''}});
+        const response = await fetch(urlBackend + "/convenios", { headers: { Authorization: 'Bearer ' + token + '' } });
         const convenios = await response.json();
         const select = document.getElementById("selectConvenio");
         select.innerHTML = "<option value=''>Seleccione...</option>";

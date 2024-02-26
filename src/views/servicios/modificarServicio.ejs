@@ -48,13 +48,21 @@
                     </div>
                 </div>
                 <div class="col-8">
-                    <div class="SpanPlan" id="infoServicio" style="float:left"></div>
-                    <div class="SpanEstado" id="infoEstado" style="float:left"></div>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
-                        style="float: right;">
-                        <i class="bi bi-caret-down-square"></i>
-                    </button>
+                    <div class="row">
+                        <div class="SpanPlan col-6" id="infoServicio" style="float:left"></div>
+                        <div class="SpanEstado col-5" id="infoEstado" style="float:left"></div>
+                        <div class="col-1">
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
+                                style="float: right;" id="toggleDataUserButton">
+                                <i class="bi bi-caret-down-square" id="toggleDataUserIcon"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="SpanPrestador" id="infoChofer"></div>
+                    </div>
                 </div>
 
 
@@ -505,7 +513,9 @@
         document.getElementById("txtObs").value = srv.observaciones;
 
         document.getElementById("infoServicio").innerText = "Tarea N° " + srv.idTarea + " - " + convertDateFormat(srv.fecha);
-        posicionarMapa();
+        if(document.getElementById("txtLatitud").value != ""){
+            posicionarMapa();
+        }
         document.getElementById("lblNombreCliente").innerText = "@" + Cliente.nombre;
         document.getElementById("lblIdCliente").innerText = Cliente.idCliente;
         document.getElementById("lblDireccion").innerText = Cliente.direccion;
@@ -536,6 +546,7 @@
             default:
                 document.getElementById("infoEstado").innerText = "PENDIENTE";
         }
+        cargaDeMovilAsignado();
     }
 
 
@@ -589,6 +600,7 @@
                     setTimeout(function () {
                         window.dispatchEvent(new Event('resize'));
                     }, 200);
+
                 })
                 .catch(error => {
 
@@ -807,7 +819,6 @@
                             timer: 1500
                         });
                     }
-                    return response.json();
                 })
                 .catch(error => {
                     Swal.fire({
@@ -820,6 +831,38 @@
                 );
         }
     }
+
+    // JavaScript toggle input data usuario expanded
+    const toggleDataUserButton = document.getElementById('toggleDataUserButton');
+    const toggleDataUserIcon = document.getElementById('toggleDataUserIcon');
+
+    toggleDataUserButton.addEventListener('click', function () {
+        if (toggleDataUserIcon.classList.contains("bi-caret-down-square")) {
+            toggleDataUserIcon.classList.remove('bi-caret-down-square');
+            toggleDataUserIcon.classList.add('bi-caret-up-square');
+        } else {
+            toggleDataUserIcon.classList.remove('bi-caret-up-square');
+            toggleDataUserIcon.classList.add('bi-caret-down-square');
+        }
+    });
+
+    // carga de moviles y choferes para mostrar el asignado al servicio
+    async function cargaDeMovilAsignado() {
+        const chofList = await JSON.parse(localStorage.getItem("auxiliadores"));
+        const prestadorList = await JSON.parse(localStorage.getItem("concesionarios"));
+
+        let movilFinalAsignado;
+        if (Servicio.idPrestador != null) {
+            movilFinalAsignado = prestadorList.find(o => o.idPrestador === Servicio.idPrestador);
+            document.getElementById("infoChofer").innerHTML = "<i class='bi bi-truck-flatbed' style='font-size: 35px; padding-right: 6px;''></i>" + movilFinalAsignado.nombre;
+        } else if (Servicio.idMovil != null) {
+            movilFinalAsignado = chofList.find(o => o.idChofer === Servicio.idMovil);
+            document.getElementById("infoChofer").innerHTML = "<i class='bi bi-truck-flatbed' style='font-size: 35px; padding-right: 6px;''></i>" + movilFinalAsignado.nombre;
+        } else {
+            document.getElementById("infoChofer").innerText = "";
+        }
+    };
+
 
 </script>
 
@@ -905,19 +948,21 @@
     }
 
     .SpanPlan {
-        margin-left: 40px;
         font-size: 25px;
-        float: right;
         font-weight: bolder;
         color: red;
     }
 
     .SpanEstado {
-        margin-left: 40px;
         font-size: 25px;
-        float: right;
         font-weight: bolder;
         color: #1b65b9;
+    }
+
+    .SpanPrestador {
+        font-size: 25px;
+        font-weight: bolder;
+        color: grey;
     }
 
     .search {

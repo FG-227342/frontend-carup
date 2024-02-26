@@ -21,11 +21,11 @@
                 </div>
             </div>
             <div class="col-8">
-                <div class="SpanPlan" style="float:left">PLAN TO:DO</div>
+                <div class="SpanPlan" style="float:left">PLAN [plan]</div>
                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
-                    style="float: right;">
-                    <i class="bi bi-caret-down-square"></i>
+                    style="float: right;" id="toggleDataUserButton">
+                    <i class="bi bi-caret-down-square" id="toggleDataUserIcon"></i>
                 </button>
             </div>
 
@@ -258,7 +258,7 @@
             <label for="" class="col-sm-1 col-form-label floatInput">Dirección:</label>
             <div class="col-sm-11 floatInput">
                 <input id="txtCalleDest" type="text" placeholder="Ingrese la calle o ruta de destino"
-                    class="form-control" maxlength="100" required>
+                    class="form-control" maxlength="100">
             </div>
             <hr>
             <h6>Viaja sólo?</h6>
@@ -1005,69 +1005,70 @@
             "celSolicitante": celSolicitante
         }
 
-        if(idVehiculoGlobal == undefined){
+        if (idVehiculoGlobal == undefined) {
             Swal.fire({
-                            icon: 'warning',
-                            title: 'Debe ingresar un vehículo!',
-                            text: "El servicio no tiene vehículo seleccionado",
-                            showConfirmButton: true,
-                        });
-        } else{
+                icon: 'warning',
+                title: 'Debe ingresar un vehículo!',
+                text: "El servicio no tiene vehículo seleccionado",
+                showConfirmButton: true,
+            });
+            $('.page-body')[0].scrollTop = 0;
+        } else {
 
             fetch(urlBackend + "/servicios",
-            {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token + ''
-                },
-                method: "POST",
-                body: JSON.stringify(srvEnviar)
-            }).then(response => {
-                if (!response.ok) {
-                    response.text().then(text => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Hubo un error al crear!',
-                            text: text,
-                            showConfirmButton: true,
-                        });
-                    })
-                } else {
-                    document.getElementsByTagName("form")[0].reset();
-                }
-                return response.json();
-            }).then(data => {
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "POST",
+                    body: JSON.stringify(srvEnviar)
+                }).then(response => {
+                    if (!response.ok) {
+                        response.text().then(text => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hubo un error al crear!',
+                                text: text,
+                                showConfirmButton: true,
+                            });
+                        })
+                    } else {
+                        document.getElementsByTagName("form")[0].reset();
+                    }
+                    return response.json();
+                }).then(data => {
 
-                const idTarea = fetch(urlBackend + "/servicios/idTarea/" + data.idSrv, { headers: { Authorization: 'Bearer ' + token + '' } }).then(r => {
-                    return r.json();
-                }).then(
-                    r => {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Servicio ingresado como la Tarea: ' + r + ' de hoy',
-                            showConfirmButton: true,
-                            allowOutsideClick: false
-                        }).then(() => {
-                            window.location.replace("/nuevoServicio");
-                        }, (error) => console.log(error));
+                    const idTarea = fetch(urlBackend + "/servicios/idTarea/" + data.idSrv, { headers: { Authorization: 'Bearer ' + token + '' } }).then(r => {
+                        return r.json();
+                    }).then(
+                        r => {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Servicio ingresado como la Tarea: ' + r + ' de hoy',
+                                showConfirmButton: true,
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.replace("/nuevoServicio");
+                            }, (error) => console.log(error));
+                        });
+                }
+                )
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con el servidor!',
+                        text: error,
+                        showConfirmButton: true,
                     });
-            }
-            )
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Parece que no hay conexión con el servidor!',
-                    text: error,
-                    showConfirmButton: true,
-                });
-            }
-            );
+                }
+                );
 
         }
 
-        
+
     }
 
     // popular datos en los select
@@ -1157,7 +1158,19 @@
     cargarDatosSelect();
 
 
+    // JavaScript toggle input data usuario expanded
+    const toggleDataUserButton = document.getElementById('toggleDataUserButton');
+    const toggleDataUserIcon = document.getElementById('toggleDataUserIcon');
 
+    toggleDataUserButton.addEventListener('click', function () {
+        if (toggleDataUserIcon.classList.contains("bi-caret-down-square")) {
+            toggleDataUserIcon.classList.remove('bi-caret-down-square');
+            toggleDataUserIcon.classList.add('bi-caret-up-square');
+        } else {
+            toggleDataUserIcon.classList.remove('bi-caret-up-square');
+            toggleDataUserIcon.classList.add('bi-caret-down-square');
+        }
+    });
 </script>
 <!-- SCRIPTS DEL MAPA -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
