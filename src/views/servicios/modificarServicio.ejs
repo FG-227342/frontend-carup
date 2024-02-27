@@ -70,7 +70,8 @@
                     <br>
                     <div class="card card-body bg-body">
                         <label for="">Dirección: <span id="lblDireccion"></span></label>
-                        <label for="">Localidad: <span id=""></span></label>
+                        <label for="">Email: <span id="lblEmail"></span></label>
+                        <!--<label for="">Localidad: <span id=""></span></label>-->
                         <label for="">Teléfono: <span id="lblTelefono"></span></label>
                         <label for="">Celular: <span id="lblCelular"></span></label>
                     </div>
@@ -521,6 +522,7 @@
         document.getElementById("lblDireccion").innerText = Cliente.direccion;
         document.getElementById("lblTelefono").innerText = Cliente.telefono;
         document.getElementById("lblCelular").innerText = Cliente.celular;
+        document.getElementById("lblEmail").innerText = Cliente.email;
 
         const estado = srv.estado;
 

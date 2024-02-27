@@ -89,6 +89,7 @@
             <th>Tarea</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Tipo Socio</th>
             <th>Estado</th>
             <th>Ciudad</th>
             <th>Localidad</th>
@@ -120,57 +121,52 @@
 
   // Fetch carga de datos y pinto la tabla
   async function fetchServicios() {
-    let idTipoS = parseInt(document.getElementById("selectTipoSocio").value);
-    let tipoAf = parseInt(document.getElementById("selectAfiliacion").value);
-    let tipoConv = parseInt(document.getElementById("selectConvenio").value);
-
- 
-      const bodyData = {
-        fechaInicial: startDate,
-        fechaFinal: endDate
-      }
-      const response = await fetch(urlBackend + "/servicios/todosWebDTO/rangoFechas", {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token + ''
-        }, method: "POST",
-        body: JSON.stringify(bodyData)
-      });
-      servicios = await response.json().then();
-      let ServiciosFiltrados =[];
-      console.log(servicios)
-      // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
-      tableAnalisisSrv.clear().draw();
-
-/*
-      if (tipoS =! 0) {
-
-        if (tipoS == 1) {
-          if (tipoAf != 0) {
-            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 && e.cliente.idAfiliacion == tipoAf });
-          } else {
-            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 })
-          }
-          tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
-        } else if (idTipoS == 4) {
-          if(tipoConv!= 0){
-            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 && e.cliente.idConvenio == tipoConv });
-          } else{
-            ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 });
-          }
-          tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
+    const idTipoS = parseInt(document.getElementById("selectTipoSocio").value);
+    const tipoAf = parseInt(document.getElementById("selectAfiliacion").value);
+    const tipoConv = parseInt(document.getElementById("selectConvenio").value);
 
 
+    const bodyData = {
+      fechaInicial: startDate,
+      fechaFinal: endDate
+    }
+    const response = await fetch(urlBackend + "/servicios/todosWebDTO/rangoFechas", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token + ''
+      }, method: "POST",
+      body: JSON.stringify(bodyData)
+    });
+    servicios = await response.json();
+    let ServiciosFiltrados = [];
+    //console.log(servicios)
+    // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
+    tableAnalisisSrv.clear().draw();
+
+    if (idTipoS != 0) {
+
+      if (idTipoS == 1) {
+        if (tipoAf != 0) {
+          ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 && e.cliente.idAfiliacion == tipoAf });
+        } else {
+          ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 1 })
         }
-       
+        tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
+      } else if (idTipoS == 4) {
+        if (tipoConv != 0) {
+          ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 && e.cliente.idConvenio == tipoConv });
+        } else {
+          ServiciosFiltrados = servicios.filter(e => { return e.cliente.idTipoCliente == 4 });
+        }
+        tableAnalisisSrv.rows.add(ServiciosFiltrados).draw();
+      }
+    } else {
+      tableAnalisisSrv.rows.add(servicios).draw();
+    }
 
-      } else {*/   //    }
-          tableAnalisisSrv.rows.add(servicios).draw();
- 
-
-    
   }
+
   var tableAnalisisSrv = $('#analisisSrv').DataTable({
     info: false,
     paging: false,
@@ -198,15 +194,17 @@
           return `
             <div class="d-flex align-items-center">
               <div class="demo-inline-spacing">
-                <a style="cursor: pointer;" title="Asignar el móvil" class="asignarSrv item-edit text-body"><i class="fa fa-car"></i></a>
-                <a style="cursor: pointer;" title="Regresar a pendiente" class="regPendiente item-edit text-body"><i class="fa fa-history"></i></a>
                 <a style="cursor: pointer;" title="Editar el servicio" class="item-edit text-body"><i class="fa fa-pencil"></i></a>
-                <a style="cursor: pointer;" title="Cancelar el servicio" class="cancelBtn text-body"><i class="fa fa-trash"></i></a>
-                <a style="cursor: pointer;" title="Terminar el servicio" class="deleteBtn text-body"><i class="fa fa-check"></i></a>
               </div>
             </div>`;
         }
       }, { data: 'idTarea' }, { data: 'fecha' }, { data: 'hora' },
+      {
+        render: function (data, type, row) {
+          //return row.cliente.idTipoCliente;
+          return document.getElementById("selectTipoSocio")[row.cliente.idTipoCliente].innerText;
+        }
+      },
       {
         render: function (data, type, row) {
           switch (row.estado) {

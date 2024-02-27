@@ -153,18 +153,12 @@
                                             <button type="submit" class="btn btn-primary" style="width: 300px;"
                                                 id="btnGuardarCliente"><span class="spinner-border spinner-border-sm"
                                                     style="margin-right: 5px;display:none;"></span>ACTUALIZAR</button>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </form>
-
-
-
-
                     </div>
-
                 </div>
 
                 <!--[ Start:: Vehiculos ]-->
@@ -173,6 +167,10 @@
                     <div class="card">
                         <div class="card-header">
                             <h5 class="mb-1">Mis Vehículos</h5>
+                            <button type="button" class="btn btn-primary" onclick="agregarNuevoVeh()"
+                                style="float:right; margin:10px">
+                                <i class="bi bi-plus-circle"></i> Agregar vehículo
+                            </button>
                         </div>
                         <div class="card-body">
                             <table class="table table-bordered nowrap table-striped text-center"
@@ -202,6 +200,68 @@
 
 </div>
 
+<!-- Modal CREAR VEHÍCULO -->
+<div class="modal fade" id="modalCrearVehiculo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Nuevo vehículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <label for="" class="col-sm-12 col-form-label floatInput">ID: <span id="txtIdVeh"></span></label>
+                <label for="txtMatricula" class="col-sm-2 col-form-label floatInput">Matrícula:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="txtMatricula" type="text" placeholder="Matrícula" class="form-control"
+                        oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');"
+                        onchange="this.value = this.value.toUpperCase()" maxlength="7">
+                </div>
+                <label for="slcMarca" class="col-sm-2 col-form-label floatInput">Marca:</label>
+                <div class="col-sm-4 floatInput">
+                    <select class="form-control" id="slcMarca" required>
+                    </select>
+                </div>
+                <span class="col-12" style="height: 30px;"></span>
+                <label for="txtModelo" class="col-sm-2 col-form-label floatInput">Modelo:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="txtModelo" type="text" placeholder="Modelo" class="form-control"
+                        onchange="this.value = this.value.toUpperCase()" maxlength="60">
+                </div>
+                <label for="txtColor" class="col-sm-2 col-form-label floatInput">Color:</label>
+                <div class="col-sm-4 floatInput">
+                    <input id="txtColor" type="text" placeholder="Color" class="form-control"
+                        onchange="this.value = this.value.toUpperCase()" maxlength="20">
+                    <br>
+                </div>
+                <div style="display: flex; justify-content: space-around;">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio" checked>Auto/Camioneta
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio">Minibus
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio">Moto
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" id="btnGuardarVehiculo" onclick="guardarNuevoVehiculo()"
+                    class="btn btn-primary"><i class="fa fa-save" style="margin-right: 5px;"></i>Guardar
+                    Vehículo</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     const cli = '<%= targetCli %>';
 
@@ -211,7 +271,7 @@
     cargarTipoCliente();
     cargarAfiliaciones();
     cargarConvenios();
-
+    cargarMarcas();
 
     let Vehiculos = [];
     let globalIdCliente;
@@ -326,9 +386,6 @@
                 }
                 );
 
-
-
-
         }
     });
 
@@ -390,11 +447,89 @@
             detalleMisVehiculos.columns.adjust().draw();
 
         });
+    }
+
+    // Agregar vehículo al Cliente
+    function agregarNuevoVeh() {
+        $('#modalCrearVehiculo').modal('toggle');
+    }
+
+    function guardarNuevoVehiculo() { 
+
+        const matricula = document.getElementById("txtMatricula").value;
+        const marca = document.getElementById("slcMarca").value;
+        const modelo = document.getElementById("txtModelo").value;
+        const color = document.getElementById("txtColor").value;
+
+        const vehiculo = {
+            "idMarca": parseInt(marca),
+            "matricula": matricula,
+            "modelo": modelo,
+            "color": color,
+            "idCliente": globalIdCliente
+        }
+
+        if (matricula == "" || modelo == "" || color == "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Debe ingresar los datos!',
+                showConfirmButton: true,
+            });
+        } else {
+            let cadenaRespuesta = "";
+            let iconAlert = "";
+            fetch(urlBackend + "/vehiculos",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    method: "POST",
+                    body: JSON.stringify(vehiculo)
+                }).then(response => {
+                    if (!response.ok) {
+                        response.text().then(text => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hubo un error al crear!',
+                                text: text,
+                                showConfirmButton: true,
+                            });
+                        })
+                    } else if (response.status == 201) {
+                        cadenaRespuesta = "Vehículo ingresado con el id ";
+                        iconAlert = "success";
+                        document.getElementById("formModal").reset();
+                        cargarVehiculos(globalIdCliente);
+                    } else if (response.ok) {
+                        cadenaRespuesta = "El vehículo ya exsiste para el cliente, ID Vehículo ";
+                        iconAlert = "warning";
+                    }
+                    return response.json();
+                }).then(data => {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: iconAlert,
+                        title: cadenaRespuesta + '[' + data.idVehiculo + ']',
+                        showConfirmButton: true,
+                        timer: 2500
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Parece que no hay conexión con la base de datos!',
+                        text: error,
+                        showConfirmButton: true,
+                    });
+                }
+                );
+            $('#modalCrearVehiculo').modal('toggle');
+        }
 
 
     }
-
-
 
 
     // Carga de inputs
@@ -476,6 +611,17 @@
         });
     }
 
+    async function cargarMarcas() {
+        const inputModalMarcas = document.getElementById("slcMarca");
+        const marcas = JSON.parse(localStorage.getItem("marcas"));
+
+        marcas.forEach(p => {
+            const option = document.createElement('option');
+            option.text = p.nombre;
+            option.value = p.idMarca;
+            inputModalMarcas.add(option);
+        });
+    }
 
 
     document.getElementById("aTabVehiculos").addEventListener('click', () => {

@@ -71,11 +71,11 @@
                     <div class="row">
                         <div class="col-12 col-lg-10" style="text-align: left">
                             <label class="form-label">Búsqueda por ID</label>
-                            <input type="text" class="form-control" placeholder="Ingrese el id a buscar" value=""
+                            <input type="text" id="txtBuscarOtros" class="form-control" placeholder="Ingrese el id a buscar" value=""
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         <div class="col-lg-2" style="padding-top: 30px;">
-                            <button value="Buscar" class="btn btn-primary search"><i class="fa fa-search"></i></button>
+                            <button value="Buscar" class="btn btn-primary search" onclick="buscarPorId()"><i class="fa fa-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -244,6 +244,60 @@
                     width: "400px"
                 });
             }
+
+
+        }
+    }
+
+    async function buscarPorId(){
+        const idBuscado = document.getElementById("txtBuscarOtros").value;
+
+        if (idBuscado == "") {
+            SnackBar({
+                message: "Debe ingresar un ID de Cliente",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else{
+            
+
+            const response = await fetch(urlBackend + "/clientes/" + idBuscado, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                SnackBar({
+                    message: "Hubo un error",
+                    status: "danger",
+                    timeout: 2500,
+                    icon: "danger",
+                    position: "tc",
+                    width: "400px"
+                });
+            });
+
+            if (response.ok) {
+                const Cliente = await response.json();
+                //console.log(Cliente)
+                fetch(apiFrontend + '/servicio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + ''
+                    },
+                    body: JSON.stringify(Cliente)
+                });
+                window.location.replace("/servicio");
+            } else if (response.status == 404) {
+                SnackBar({
+                    message: "No se encontró el cliente",
+                    status: "warning",
+                    timeout: 2500,
+                    icon: "warn",
+                    position: "tc",
+                    width: "400px"
+                });
+            }
+
 
 
         }
