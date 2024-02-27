@@ -3,9 +3,87 @@
         <div class="card-body">
             <h4>Mis Clientes</h4>
             <div class="col-10 offset-1">
-                <div class="col-12">
-                    <a class="btn btn-primary" href="/nuevoCliente" style="float:right; margin:10px"><i class="bi bi-plus-circle"></i> Nuevo</a>
+                <div class="col-12" style="height: 60px;">
+
+                    <a class="btn btn-primary" href="/nuevoCliente" style="float:right; margin:10px"><i
+                            class="bi bi-plus-circle"></i> Nuevo cliente</a>
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" style="float:right; margin:10px">
+                        <i class="bi bi-search"></i> Búsqueda avanzada
+                    </button>
+
                 </div>
+                <div class="col-12" style="padding: 30px 0px;">
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body bg-body"
+                            style="display: flex;flex-direction: row;flex-wrap: wrap;gap: 20px;justify-content: space-evenly;align-items: center">
+                            <div>
+                                <label class="form-label">TIPO DE CLIENTE</label>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1"
+                                        autocomplete="off" checked="" value="todos">
+                                    <label class="btn btn-outline-primary" for="btnradio1">TODOS</label>
+
+                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
+                                        autocomplete="off" value="directo">
+                                    <label class="btn btn-outline-primary" for="btnradio2">DIRECTO</label>
+
+                                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3"
+                                        autocomplete="off" value="bse">
+                                    <label class="btn btn-outline-primary" for="btnradio3">BSE</label>
+                                </div>
+                            </div>
+                            <div>
+                                <div id="inputBuscarTodos" style="display: flex;flex-direction: row;gap: 10px;">
+                                    <div>
+                                        <label class="form-label" style="padding-top: 5px;">Nombre </label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="txtBuscarTodos" class="form-control"
+                                            placeholder="Ingrese el nombre" maxlength="8">
+                                    </div>
+                                    <div>
+                                        <button value="Buscar" class="btn btn-primary" onclick="buscarTodos()"><i
+                                                class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                                <div id="inputBuscarDirecto" style="display: none;flex-direction: row;gap: 10px;">
+                                    <div>
+                                        <label class="form-label" style="padding-top: 5px;">Documento </label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="txtBuscarDirecto" class="form-control"
+                                            placeholder="Ingrese el documento"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="8">
+                                    </div>
+                                    <div>
+                                        <button value="Buscar" class="btn btn-primary" onclick="buscarDirecto()"><i
+                                                class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                                <div id="inputBuscarBSE" style="display: none;flex-direction: row;gap: 10px;">
+                                    <div>
+                                        <label class="form-label" style="padding-top: 5px;">Matrícula </label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="txtBuscarBSE" class="form-control"
+                                            placeholder="Ingrese la matrícula"
+                                            oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"
+                                            maxlength="8">
+                                    </div>
+                                    <div>
+                                        <button value="Buscar" class="btn btn-primary" onclick="buscarBSE()"><i
+                                                class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
                 <table class="table table-striped table-bordered text-center" id="tabClientes" style="width:100%">
                     <thead>
                         <tr>
@@ -32,11 +110,18 @@
 
     let clientes;
 
+    cargarTipoCliente();
+    cargarAfiliaciones();
+    cargarConvenios();
+    let TiposCliente;
+    let TiposAfiliaciones;
+    let TiposConvenios;
+
     // Inicializo la tabla
     const table = $('#tabClientes').DataTable({
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json",
-            "search":"Filtrar"
+            "search": "Filtrar"
         },
         scrollY: '900px',
         paging: false,
@@ -90,7 +175,7 @@
     // Fetch carga de datos y pinto la tabla
     async function fetchClientes() {
         const response = await fetch(urlBackend + "/clientes/todosDTO", { headers: { Authorization: 'Bearer ' + token + '' } });
-        const clientes = await response.json();
+        clientes = await response.json();
         // Borro los datos de la tabla y vuelvo a pintar con los datos nuevos
         table.clear().draw();
         table.rows.add(clientes).draw();
@@ -98,6 +183,189 @@
 
     // Actualizo el ancho de las columnas para reparar el scrollY
     setTimeout(() => { table.columns.adjust().draw(); }, 100);
+
+    // Obtener todos los botones de radio
+    var radioButtons = document.querySelectorAll('input[name="btnradio"]');
+
+    // Asignar un controlador de eventos change a cada botón de radio
+    radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+            if (this.value == "directo") {
+                document.getElementById("inputBuscarTodos").style.display = "none";
+                document.getElementById("inputBuscarDirecto").style.display = "flex";
+                document.getElementById("inputBuscarBSE").style.display = "none";
+            } else if (this.value == "bse") {
+                document.getElementById("inputBuscarTodos").style.display = "none";
+                document.getElementById("inputBuscarDirecto").style.display = "none";
+                document.getElementById("inputBuscarBSE").style.display = "flex";
+            } else {
+                document.getElementById("inputBuscarTodos").style.display = "flex";
+                document.getElementById("inputBuscarDirecto").style.display = "none";
+                document.getElementById("inputBuscarBSE").style.display = "none";
+            }
+        });
+    });
+
+    async function buscarTodos() {
+        table.clear().draw();
+        const nombre = document.getElementById("txtBuscarTodos").value;
+
+        if (nombre == "") {
+            SnackBar({
+                message: "Debe ingresar un nombre",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+
+            const response = await fetch(urlBackend + "/clientes/porNombreDTO/" + nombre, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                Swal.fire({
+                    status: 'danger',
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    showConfirmButton: true,
+                });
+            });
+
+            if (response.ok) {
+                let clis = await response.json();
+                console.log(clis)
+
+
+                table.rows.add(clis).draw();
+                document.getElementById("txtBuscarTodos").value = "";
+
+            } else if (response.status == 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se encontró al cliente',
+                    showConfirmButton: true,
+                });
+            }
+        }
+    }
+
+    async function buscarDirecto() {
+        table.clear().draw();
+
+        const documento = document.getElementById("txtBuscarDirecto").value;
+
+        if (documento == "") {
+            SnackBar({
+                message: "Debe ingresar una cédula",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+
+            const response = await fetch(urlBackend + "/clientes/clienteCARUP/" + documento, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                Swal.fire({
+                    status: 'danger',
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    showConfirmButton: true,
+                });
+            });
+
+            if (response.ok) {
+                let cli = await response.json();
+                console.log(cli)
+                let cliTarget = [{
+                    celular: cli.celular,
+                    documento: cli.documento,
+                    email: cli.email,
+                    idCliente: cli.idCliente,
+                    nombre: cli.nombre,
+                    nombreAfiliacion: TiposAfiliaciones[cli.idAfiliacion].nombre,
+                    nombreConvenio: null,
+                    nombreTipoCliente: "DIRECTO",
+                    telefono: cli.telefono
+                }]
+                table.rows.add(cliTarget).draw();
+                document.getElementById("txtBuscarDirecto").value = "";
+
+            } else if (response.status == 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se encontró al cliente',
+                    showConfirmButton: true,
+                });
+            }
+        }
+    }
+
+    async function buscarBSE() {
+        table.clear().draw();
+        const matricula = document.getElementById("txtBuscarBSE").value;
+
+        if (matricula == "") {
+            SnackBar({
+                message: "Debe ingresar una matrícula",
+                status: "warning",
+                timeout: 2500,
+                icon: "warn",
+                position: "tc",
+                width: "400px"
+            });
+        } else {
+            const response = await fetch(urlBackend + "/clientes/clienteBsePorMatricula/" + matricula, { headers: { Authorization: 'Bearer ' + token + '' } }).catch(e => {
+                SnackBar({
+                    message: "Error de conexión",
+                    status: "danger",
+                    timeout: 2500,
+                    icon: "danger",
+                    position: "tc",
+                    width: "400px"
+                });
+            });
+
+            if (response.ok) {
+                let cli = await response.json();
+
+                let cliTarget = [{
+                    celular: cli.celular,
+                    documento: cli.documento,
+                    email: cli.email,
+                    idCliente: cli.idCliente,
+                    nombre: cli.nombre,
+                    nombreAfiliacion: null,
+                    nombreConvenio: "BSE",
+                    nombreTipoCliente: "CONVENIO",
+                    telefono: cli.telefono
+                }]
+                table.rows.add(cliTarget).draw();
+                document.getElementById("txtBuscarBSE").value = "";
+
+            } else if (response.status == 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se encontró al cliente',
+                    showConfirmButton: true,
+                });
+            }
+        }
+    }
+
+    async function cargarTipoCliente() {
+        const response = await fetch(urlBackend + "/clientes/tipoClientes", { headers: { Authorization: 'Bearer ' + token + '' } });
+        TiposCliente = await response.json();
+    }
+
+    async function cargarAfiliaciones() {
+        const response = await fetch(urlBackend + "/afiliaciones", { headers: { Authorization: 'Bearer ' + token + '' } });
+        TiposAfiliaciones = await response.json();
+    }
+
+    async function cargarConvenios() {
+        const response = await fetch(urlBackend + "/convenios", { headers: { Authorization: 'Bearer ' + token + '' } });
+        TiposConvenios = await response.json();
+    }
 </script>
 
 <style>

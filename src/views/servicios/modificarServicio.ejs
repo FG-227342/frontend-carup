@@ -254,7 +254,7 @@
                     </select>
                 </div>
                 <div class="form-check form-switch col-6" style="padding: 15px;">
-                    <input class="form-check-input" type="checkbox" id="checkEsConcesionario"
+                    <input class="form-check-input" type="checkbox" id="checkEsSiniestro"
                         style="transform: scale(1.2); margin-left: 10px;">
                     <label class="form-check-label" for="checkEsCamion" style="margin-left: 10px;">Es Siniestro?</label>
                 </div>
@@ -315,7 +315,7 @@
         </form>
         <ul id="menuRight-sidebar">
             <li>
-                <a class="entypo-item2"><i class="fa fa-car"></i><span>Asignar</span></a>
+                <a class="entypo-item2" onclick="openModalReasignar()"><i class="fa fa-car"></i><span>Asignar</span></a>
             </li>
             <li>
                 <a class="entypo-item2" onclick="cambiarEstado('C')"><i
@@ -343,11 +343,52 @@
 
 </div>
 
+<!-- Modal ASIGNAR-->
+<div class="modal fade" id="modalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <span id="hideIdTarea" style="display: none;"></span>
+        <span id="hideIdServicio" style="display: none;"></span>
+        <form id="formModal" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">ASIGNACIÓN DEL SERVICIO
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+
+                    <div class="col">
+                        <div class="form-check form-switch col-6">
+                            <input class="form-check-input" type="checkbox" id="checkEsConcesionario"
+                                style="transform: scale(1.2);">
+                            <label class="form-check-label">Es Prestador?</label>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-4" style="padding-top: 5px;text-align: right;"><label
+                                    class="form-label">Chofer/Concesionario: </label></div>
+                            <div class="col-8">
+                                <select class="form-control" id="slcAsignarMovil"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSaveModalAsignar"><span
+                        class="spinner-border spinner-border-sm"
+                        style="margin-right: 5px;display:none;"></span>Asignar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 
     const dataModificar = JSON.parse('<%- dataSrv %>');
-    console.log(dataModificar)
+    let moviles;
+    let concesionarios;
 
     if (dataModificar.length != 0) {
         $("#contenedorBusqueda").hide();
@@ -370,6 +411,33 @@
         guardarServicio();
     });
 
+
+    // evento switch reasignacion
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("checkEsConcesionario").addEventListener('change', () => popularSelectAsignar());
+        popularSelectAsignar();
+
+    });
+
+    function popularSelectAsignar() {
+        const selectAsignar = document.getElementById("slcAsignarMovil");
+        selectAsignar.innerText = "";
+        if (document.getElementById("checkEsConcesionario").checked) {
+            concesionarios.forEach(p => {
+                const option = document.createElement('option');
+                option.text = p.nombre;
+                option.value = p.idPrestador;
+                selectAsignar.add(option);
+            });
+        } else {
+            moviles.forEach(p => {
+                const option = document.createElement('option');
+                option.text = "[" + p.nombreMovil + "] - " + p.nombreChofer;
+                option.value = p.idChofer;
+                selectAsignar.add(option);
+            });
+        }
+    }
 
     let Cliente;
     let Servicio;
@@ -479,6 +547,8 @@
         return info[2] + '/' + info[1] + '/' + info[0];
     }
 
+
+
     async function pintarDatos(srv) {
         await obtenerDatosCliente(srv.clienteId);
 
@@ -514,7 +584,7 @@
         document.getElementById("txtObs").value = srv.observaciones;
 
         document.getElementById("infoServicio").innerText = "Tarea N° " + srv.idTarea + " - " + convertDateFormat(srv.fecha);
-        if(document.getElementById("txtLatitud").value != ""){
+        if (document.getElementById("txtLatitud").value != "") {
             posicionarMapa();
         }
         document.getElementById("lblNombreCliente").innerText = "@" + Cliente.nombre;
@@ -704,7 +774,15 @@
             inputMarcas.add(option);
 
         });
+
+        // carga de datos
+        (async function cargarDatos() {
+            moviles = await JSON.parse(localStorage.getItem('turno'));
+            concesionarios = await JSON.parse(localStorage.getItem('concesionarios'));
+
+        })();
     }
+
     cargarDatosSelect();
 
     function guardarServicio() {
@@ -864,6 +942,75 @@
             document.getElementById("infoChofer").innerText = "";
         }
     };
+
+    // ASIGNACIÓN DE SERVICIOS
+    document.getElementById("btnSaveModalAsignar").addEventListener("click", () => {
+
+        const selectAsignar = document.getElementById("slcAsignarMovil");
+
+        const idServicio = Servicio.idSrv;
+        let bodyData;
+        const idMovilTarget = parseInt(selectAsignar.value);
+        const nombreChofTarget = document.getElementById("slcAsignarMovil").options[document.getElementById("slcAsignarMovil").selectedIndex].text;
+        let esPrestador;
+        if (document.getElementById("checkEsConcesionario").checked) {
+            esPrestador = true;
+            bodyData = {
+                "idPrestador": parseInt(selectAsignar.value)
+            }
+        } else {
+            esPrestador = false;
+            bodyData = {
+                "idChofer": parseInt(selectAsignar.value)
+            }
+        }
+
+        fetch(urlBackend + "/servicios/asignarMovil/" + idServicio,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + ''
+                },
+                method: "PATCH",
+                body: JSON.stringify(bodyData)
+            }).then(response => {
+                if (!response.ok) {
+                    response.text().then(text => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error al asignar!',
+                            text: text,
+                            showConfirmButton: true,
+                        });
+                    })
+                } else {
+
+                    document.getElementById("infoEstado").innerText = "ASIGNADO";
+                    document.getElementById("infoChofer").innerHTML = "<i class='bi bi-truck-flatbed' style='font-size: 35px; padding-right: 6px;''></i>" + nombreChofTarget;
+                    $('#modalAsignar').modal('toggle');
+
+                }
+                return response.json();
+            }).then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Parece que no hay conexión con la base de datos!',
+                    text: error,
+                    showConfirmButton: true,
+                });
+            }
+            );
+    });
+
+
+
+    function openModalReasignar() {
+        $('#modalAsignar').modal('toggle');
+    }
 
 
 </script>
